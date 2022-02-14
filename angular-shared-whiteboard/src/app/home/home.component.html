@@ -1,0 +1,19 @@
+<div class="container">
+    <h2>2021 - 2022 Angular Shared Whiteboard.</h2>
+    <div class="main">
+        <div class="row-auto">
+            <div class="row-auto">
+                <button (click)="join()">Join room</button>
+            </div>
+            <div class="row-auto">
+                <input type="text" #titleInput id="idRoomText" style="display:none;">
+                <button  style="display:none;" id="joinButton" type="submit" (click)='joinRoom(titleInput.value)'>Join</button>
+                
+            </div>
+            
+        </div>
+        <div class="row-auto">
+            <button  (click)="createRoom()">Create new room</button>
+        </div>
+    </div>
+</div>
