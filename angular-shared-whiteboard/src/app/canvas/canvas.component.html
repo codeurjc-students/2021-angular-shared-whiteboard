@@ -5,6 +5,9 @@
 
     <div class="row options">
       <div class="col">
+        <button id="btnDelete" (click)='delete()'>Delete</button>
+      </div>
+      <div class="col">
         <button id="btnText" (click)='drawText()'>Text</button>
       </div>
       <div class="col">
@@ -24,9 +27,7 @@
               fill="currentColor" />
           </svg></button>
       </div>
-      <div class="col">
-        <button id="btnDelete">Delete</button>
-      </div>
+     
     </div>
     <div class="row canvas">
       <div class="col center" style="width:602px">

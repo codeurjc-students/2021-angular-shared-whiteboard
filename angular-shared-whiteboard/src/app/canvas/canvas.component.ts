@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {fabric} from 'fabric';
+import { fabric } from 'fabric';
 
 
 
@@ -9,18 +9,29 @@ import {fabric} from 'fabric';
   styleUrls: ['./canvas.component.css']
 })
 export class CanvasComponent implements OnInit {
-  canvas: any;
+  private _canvas=new fabric.Canvas('canvas');
 
+  constructor() {
+  }
   ngOnInit(): void {
-    this.canvas = new fabric.Canvas('canvas');
-     this.canvas.add(new fabric.Textbox('gooordo'));
+    this._canvas = new fabric.Canvas('canvas');
   }
-  drawText():void{
-    this.canvas.isDrawingMode = false;
+  delete(): void {
+    var selectedObjects = this._canvas.getActiveObjects();
+    selectedObjects.forEach(shape => {
+      this._canvas.remove(shape);
+    });;
+    }
+  drawText(): void {
+    this._canvas.isDrawingMode = false;
+    this._canvas.add(new fabric.Textbox('Insert text'));
   }
-  freeDraw():void{
-    this.canvas.isDrawingMode = true;
-    console.log("draw")
+  freeDraw(): void {
+    this._canvas.isDrawingMode = true;
+  }
+  drawRect():void{
+  }
+  drawCircle():void{
 
   }
 }
