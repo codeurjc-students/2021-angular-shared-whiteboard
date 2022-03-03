@@ -8,6 +8,7 @@ const io = require('socket.io')(server, {
 });
 const chalk = require('chalk');
 
+
 io.on('connection', function (socket) {
     const id_handshake = socket.id;
     const {nameRoom} = socket.handshake.query;

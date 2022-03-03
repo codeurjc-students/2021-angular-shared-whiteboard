@@ -9,8 +9,8 @@ import { fabric } from 'fabric';
   styleUrls: ['./canvas.component.css']
 })
 export class CanvasComponent implements OnInit {
-  private _canvas=new fabric.Canvas('canvas');
-
+  private _canvas = new fabric.Canvas('canvas');
+  
   constructor() {
   }
   ngOnInit(): void {
@@ -21,7 +21,7 @@ export class CanvasComponent implements OnInit {
     selectedObjects.forEach(shape => {
       this._canvas.remove(shape);
     });;
-    }
+  }
   drawText(): void {
     this._canvas.isDrawingMode = false;
     this._canvas.add(new fabric.Textbox('Insert text'));
@@ -29,9 +29,22 @@ export class CanvasComponent implements OnInit {
   freeDraw(): void {
     this._canvas.isDrawingMode = true;
   }
-  drawRect():void{
-  }
   drawCircle():void{
-
+    this._canvas.add(new fabric.Circle({
+      width: 100, height: 100, left: 100, top: 100, fill: '#725AC1', angle:45, radius:50
+    }))
   }
+  drawRect():void{
+    this._canvas.add(new fabric.Rect({
+      width: 100, height: 100, left: 100, top: 100, fill: '#725AC1',
+    }))
+    this.changeColor();
+  }
+  changeColor():void{
+    var activeObjects = this._canvas.getActiveObjects();
+    activeObjects.forEach(o => {
+      o.set('fill','blue')
+    });;
+  }
+
 }

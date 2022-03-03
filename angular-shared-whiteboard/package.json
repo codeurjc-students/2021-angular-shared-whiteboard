@@ -19,8 +19,11 @@
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "@types/fabric": "^4.5.7",
+    "express": "^4.17.3",
     "ngx-cookie-service": "^13.1.2",
+    "ngx-socket-io": "^4.1.0",
     "rxjs": "~6.6.0",
+    "socket.io": "^2.3.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

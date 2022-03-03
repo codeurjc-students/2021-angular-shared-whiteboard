@@ -6,6 +6,7 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { HomeComponent } from './home/home.component';
 import { RoomComponent } from './room/room.component';
 import{RouterModule, Routes} from '@angular/router'
+import { CookieService } from 'ngx-cookie-service';
 
 const routes: Routes=[
   {
@@ -29,7 +30,9 @@ const routes: Routes=[
     AppRoutingModule,
     RouterModule.forRoot(routes),
   ],
-  providers: [],
+  providers: [
+    CookieService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
