@@ -8,16 +8,7 @@ import { RoomComponent } from './room/room.component';
 import{RouterModule, Routes} from '@angular/router'
 import { CookieService } from 'ngx-cookie-service';
 
-const routes: Routes=[
-  {
-    path:'',
-    component:HomeComponent
-  },
-  {
-    path:':room',
-    component:RoomComponent
-  }
-];
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -27,8 +18,7 @@ const routes: Routes=[
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    RouterModule.forRoot(routes),
+    AppRoutingModule
   ],
   providers: [
     CookieService,

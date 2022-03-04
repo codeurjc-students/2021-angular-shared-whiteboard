@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Output, Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Socket } from 'ngx-socket-io';
 
@@ -6,8 +6,6 @@ import { Socket } from 'ngx-socket-io';
   providedIn: 'root'
 })
 export class SocketWebService extends Socket {
-  @Output() callBack: EventEmitter<any> = new EventEmitter();
-
   constructor(private cookieService: CookieService) {
     super({
       url: 'http://localhost:8080',
@@ -20,10 +18,7 @@ export class SocketWebService extends Socket {
     this.listen();
   }
   listen = () => {
-    this.ioSocket.on('draw', (res: any) => this.callBack.emit(res))
   }
-  drawEvent = (payload = {}) => {
-    this.ioSocket.emit('draw', payload);
-  }
-
+  
 }
+

@@ -6,26 +6,22 @@ const io = require('socket.io')(server, {
         origins: ['http://localhost:4200']
     }
 });
-const chalk = require('chalk');
-
-
-io.on('connection', function (socket) {
+io.on('connection', socket=>{
     const id_handshake = socket.id;
     const {nameRoom} = socket.handshake.query;
 
     socket.join(nameRoom);
-
     console.log(`Nuevo dispositivo conectado: ${id_handshake} a: ${nameRoom}`);
-    
-    socket.on('draw',(res)=>{
-        const drawData = res;
-        socket.to(nameRoom).emit('draw', drawData);
-    })
-  
 });
+io.on('disconnect', socket=>{
+    const id_handshake = socket.id;
+    const {nameRoom} = socket.handshake.query;
 
+    socket.join(nameRoom);
+    console.log(`Nuevo dispositivo desconectado: ${id_handshake} de: ${nameRoom}`);
+});
 server.listen(8080,()=>{
-    console.log('Server ready (port 8080)')
+    console.log('Server ready Port 8080')
 })
 
 

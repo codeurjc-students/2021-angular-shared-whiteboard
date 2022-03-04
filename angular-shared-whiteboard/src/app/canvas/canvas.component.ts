@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { fabric } from 'fabric';
+import { SocketWebService } from '../services/socket-web.service';
 
 
 
@@ -11,7 +12,7 @@ import { fabric } from 'fabric';
 export class CanvasComponent implements OnInit {
   private _canvas = new fabric.Canvas('canvas');
   
-  constructor() {
+  constructor(private socketService: SocketWebService) {
   }
   ngOnInit(): void {
     this._canvas = new fabric.Canvas('canvas');

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-room',
@@ -15,7 +16,8 @@ export class RoomComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.room = this.router.snapshot.paramMap.get('room');
+    this.cookieService.set('room', this.room);
   }
   ngOnDestroy() {
   }
