@@ -12,14 +12,14 @@ io.on('connection', socket=>{
 
     socket.join(nameRoom);
     console.log(`Nuevo dispositivo conectado: ${id_handshake} a: ${nameRoom}`);
-});
-io.on('disconnect', socket=>{
-    const id_handshake = socket.id;
-    const {nameRoom} = socket.handshake.query;
 
-    socket.join(nameRoom);
-    console.log(`Nuevo dispositivo desconectado: ${id_handshake} de: ${nameRoom}`);
+    socket.on('draw',(res)=>{
+        const drawData = res;
+        socket.to(nameRoom).emit('draw', drawData);
+        console.log(drawData);
+    })
 });
+
 server.listen(8080,()=>{
     console.log('Server ready Port 8080')
 })
