@@ -16,7 +16,6 @@ io.on('connection', socket=>{
     socket.on('draw',(res)=>{
         const drawData = res;
         socket.to(nameRoom).emit('draw', drawData);
-        console.log(drawData);
     })
 });
 
