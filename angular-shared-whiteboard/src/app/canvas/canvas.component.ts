@@ -21,26 +21,23 @@ export class CanvasComponent implements OnInit {
   }
   ngOnInit(): void {
     this.canvas = new fabric.Canvas('canvas');
-    this.canvas.on("mouse:wheel", function (e) { //Event when spin mouse
-      console.log(e);
-    });
 
     this.canvas.on('object:added', (e) => {
-      if (this.emite) {  //Event when an object is selected
+      if (this.emite) {
         this.socketService.drawEvent((e));
       }
     });
-    this.canvas.on('path:created', (e)=>{
-        if (this.emite) {  //Event when an object is selected
-          this.socketService.drawEvent((e));
-        }
+    this.canvas.on('path:created', (e) => {
+      if (this.emite) {
+        this.socketService.drawEvent((e));
+      }
     });
-    
+
   }
 
   draw(e: fabric.IEvent<Event>): void {
     if (e != null) {
-      console.log('Target=> ',e.target)
+      console.log('Target => ', e.target)
       switch (e.target?.type) {
         case "rect":
           this.canvas.add(new fabric.Rect(e.target));
@@ -49,16 +46,27 @@ export class CanvasComponent implements OnInit {
           this.canvas.add(new fabric.Circle(e.target));
           break;
         case "textbox":
-          this.canvas.add(new fabric.Textbox('',e.target));
+          this.canvas.add(new fabric.Textbox('', e.target));
           break;
-          case "path":
-            console.log('insertando path')
-          this.canvas.add(new fabric.Path('M 0 20',e.target));
+        case "path":
+          var pathValue = this.mapPathFromEvent(e);
+          if (pathValue != null)
+            this.canvas.add(new fabric.Path(pathValue, e.target))
           break;
         default:
           console.log('Target type is null')
       }
     }
+  }
+  mapPathFromEvent(e: fabric.IEvent<Event>): string {
+    const path = (e as any).target.path as Array<Array<any>>;
+    let pathValue = "";
+    path.forEach((elements) => {
+      elements.forEach((elementPath) => {
+        pathValue += ' ' + elementPath
+      });
+    });
+    return pathValue;
   }
   delete(): void {
     var selectedObjects = this.canvas.getActiveObjects();
