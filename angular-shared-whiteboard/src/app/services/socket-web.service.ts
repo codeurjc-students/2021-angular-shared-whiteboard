@@ -8,6 +8,7 @@ import { Socket } from 'ngx-socket-io';
 export class SocketWebService extends Socket {
 
   @Output() callDraw: EventEmitter<any> = new EventEmitter();
+  @Output() callRemove: EventEmitter<any> = new EventEmitter();
 
 
   constructor(private cookieService: CookieService) {
@@ -22,10 +23,14 @@ export class SocketWebService extends Socket {
     this.listen();
   }
   listen = () => {
-    this.ioSocket.on('draw', (res: any) => this.callDraw.emit(res))
+    this.ioSocket.on('draw', (res: any,name:string) => this.callDraw.emit({res, name}))
+    this.ioSocket.on('remove', (res: any) => this.callRemove.emit(res))
   }
-  drawEvent = (payload = {}) => {
-    this.ioSocket.emit('draw', payload);
+  drawEvent = (payload :any, name:string) => {
+    this.ioSocket.emit('draw', payload, name);
+  }
+  removeEvent = (payload = {}) => {
+    this.ioSocket.emit('remove', payload);
   }
 }
 

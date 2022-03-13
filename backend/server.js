@@ -13,9 +13,14 @@ io.on('connection', socket=>{
     socket.join(nameRoom);
     console.log(`Nuevo dispositivo conectado: ${id_handshake} a: ${nameRoom}`);
 
-    socket.on('draw',(res)=>{
+    socket.on('draw',(res, name)=>{
         const drawData = res;
-        socket.to(nameRoom).emit('draw', drawData);
+        const nameShape = name;
+        socket.to(nameRoom).emit('draw', drawData, nameShape);
+    })
+    socket.on('remove',(res)=>{
+        const removeData = res;
+        socket.to(nameRoom).emit('remove', removeData);
     })
 });
 
