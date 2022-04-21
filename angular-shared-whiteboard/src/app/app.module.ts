@@ -5,8 +5,8 @@ import { AppComponent } from './app.component';
 import { CanvasComponent } from './canvas/canvas.component';
 import { HomeComponent } from './home/home.component';
 import { RoomComponent } from './room/room.component';
-import{RouterModule, Routes} from '@angular/router'
 import { CookieService } from 'ngx-cookie-service';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 
 @NgModule({
@@ -18,7 +18,8 @@ import { CookieService } from 'ngx-cookie-service';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ColorPickerModule
   ],
   providers: [
     CookieService,

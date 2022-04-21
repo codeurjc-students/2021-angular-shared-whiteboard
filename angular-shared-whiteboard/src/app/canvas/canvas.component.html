@@ -32,9 +32,14 @@
       </div>
      
     </div>
-    <div class="row canvas">
+    <div class="col canvas">
       <div class="col center" style="width:602px">
         <canvas width="600" height="600" style="border: 1px solid #cccccc;" id="canvas"></canvas>
       </div>
+      <div class="col colorPaletteContainer">
+        <span [style.background]="selectedColor" [cpToggle]="true" [cpDialogDisplay]="'inline'"
+             [(colorPicker)]="selectedColor"></span>
     </div>
+    </div>
+  
   </div>

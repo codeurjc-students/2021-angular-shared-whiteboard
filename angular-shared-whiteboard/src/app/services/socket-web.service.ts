@@ -9,8 +9,8 @@ export class SocketWebService extends Socket {
 
   @Output() callDraw: EventEmitter<any> = new EventEmitter();
   @Output() callRemove: EventEmitter<any> = new EventEmitter();
-
-
+  @Output() callChangeColor: EventEmitter<any> = new EventEmitter();
+  @Output() callModify: EventEmitter<any> = new EventEmitter();
   constructor(private cookieService: CookieService) {
     super({
       url: 'http://localhost:8080',
@@ -23,14 +23,24 @@ export class SocketWebService extends Socket {
     this.listen();
   }
   listen = () => {
-    this.ioSocket.on('draw', (res: any,name:string) => this.callDraw.emit({res, name}))
+    this.ioSocket.on('draw', (res: any, name: string) => this.callDraw.emit({ res, name }))
     this.ioSocket.on('remove', (res: any) => this.callRemove.emit(res))
+    this.ioSocket.on('modify',(res:any, activeObjectNames: any)=> this.callModify.emit({res, activeObjectNames}))
+    this.ioSocket.on('colorChanged', (obj: string, color: string) => this.callChangeColor.emit({ obj, color }))
   }
-  drawEvent = (payload :any, name:string) => {
+  drawEvent = (payload: any, name: string) => {
     this.ioSocket.emit('draw', payload, name);
   }
   removeEvent = (payload = {}) => {
     this.ioSocket.emit('remove', payload);
+  }
+  modifyEvent = (payload: any, activeObjectNames: string[]) => {
+    console.log('evento ', payload, 'activeObjects ', activeObjectNames)
+    this.ioSocket.emit('modify', payload, activeObjectNames);
+  }
+  changeColorEvent = (objectId: string, color: string) => {
+    console.log("desde service: ", objectId, color)
+    this.ioSocket.emit('colorChanged', objectId, color);
   }
 }
 
