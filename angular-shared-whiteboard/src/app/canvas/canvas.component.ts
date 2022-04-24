@@ -66,31 +66,72 @@ export class CanvasComponent implements OnInit {
     });
     this.canvas.on('object:modified', (e) => {
       if (this.emite) {
-        var objectNames: any[] = [];
-        this.canvas.getActiveObjects().forEach((object :any)=>{
-            objectNames.push(object.name);
+        var objects: any[] = [];
+        this.canvas.getActiveObjects().forEach((object: any) => {
+          objects.push({
+            name: object.name,
+            shape: object
+          });
         });
-        this.socketService.modifyEvent(e, objectNames);
+        console.log(this.canvas.getActiveObjects())
+
+        this.socketService.modifyEvent(e, objects);
       }
     });
+  
   }
   modifyObjectFromEvent(event: any) {
-    var res = event.res;
-    console.log('Last x: ', res.transform.lastX, 'LastY: ', res.transform.lastY)
-    event.activeObjectNames.forEach((name:any) => {
-      this.canvas.getObjects().forEach(shape => {
-        if (shape.name == name) {
-          console.log('modificando');
-          let options = res.target;
-          shape.left = options.left;
-          shape.top = options.top;
-          shape.angle = options.angle;
-          shape.scaleX = options.scaleX;
-          shape.scaleY = options.scaleY;
-        }
-    });
-    });
-    this.canvas.renderAll();
+    var target = event.res.target;
+    if (target.objects != null) {
+
+      // event.objects.forEach((from: any) => {
+      //   this.canvas.getObjects().forEach(to => {
+      //     if (to.name == from.name) {
+      //       this.canvas.setActiveObject(to);
+      //     }
+      //   });
+      // });
+      // console.log(this.canvas.getActiveObjects());
+
+      // //   event.objects.forEach((from: any) => {
+      // //   this.canvas.getObjects().forEach(to => {
+      // //     if (to.name == from.name) {
+      // //       console.log('origen: ',to)
+      // //       console.log('desde: ', from.shape.left);
+      // //       console.log('hasta: ', to.left);
+      // //       to.left = from.shape.left;
+      // //       console.log('desde: ', from.shape.top);
+      // //       console.log('hasta: ', to.top);
+      // //       to.top = from.shape.top;
+      // //       console.log('x: ', to.originX);
+      // //       console.log('toyp', to.originY);
+      // //       to.angle = from.shape.angle;
+      // //       to.scaleX = from.shape.scaleX;
+      // //       to.scaleY = from.shape.scaleY;
+      // //       this.canvas.renderAll();
+      // //       console.log('modificando to: ', to);
+      // //       return;
+      // //     }
+      // //   });
+      // // });
+    } else {
+      event.objects.forEach((from: any) => {
+        this.canvas.getObjects().forEach(to => {
+          if (to.name == from.name) {
+            console.log('modificando from: ', from, ' \n a to: ', to);
+            to.left = from.shape.left;
+            to.top = from.shape.top;
+            to.angle = from.shape.angle;
+            to.scaleX = from.shape.scaleX;
+            to.scaleY = from.shape.scaleY;
+            this.canvas.renderAll();
+            return;
+          }
+        });
+      });
+    }
+
+
   }
   deleteFromEvent(nameToRemove: string): void {
     if (nameToRemove != null) {

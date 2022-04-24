@@ -22,16 +22,14 @@ io.on('connection', socket=>{
         const removeData = res;
         socket.to(nameRoom).emit('remove', removeData);
     })
-    socket.on('modify',(res, activeObjects)=>{
+    socket.on('modify',(res, activeObjectNames)=>{
         const modifyData = res;
-        const activeObjectsData = activeObjects;
-        console.log('en server: ', res, activeObjects)
-        socket.to(nameRoom).emit('modify', modifyData,activeObjectsData);
+        const names = activeObjectNames;
+        socket.to(nameRoom).emit('modify', modifyData,names);
     })
     socket.on('colorChanged', (obj, color)=>{
         const objData = obj;
         const shapeColor = color;
-        console.log("en server ", obj, color)
         socket.to(nameRoom).emit('colorChanged', objData, shapeColor);
     })
 });

@@ -25,7 +25,7 @@ export class SocketWebService extends Socket {
   listen = () => {
     this.ioSocket.on('draw', (res: any, name: string) => this.callDraw.emit({ res, name }))
     this.ioSocket.on('remove', (res: any) => this.callRemove.emit(res))
-    this.ioSocket.on('modify',(res:any, activeObjectNames: any)=> this.callModify.emit({res, activeObjectNames}))
+    this.ioSocket.on('modify',(res:any, objects: any)=> this.callModify.emit({res, objects}))
     this.ioSocket.on('colorChanged', (obj: string, color: string) => this.callChangeColor.emit({ obj, color }))
   }
   drawEvent = (payload: any, name: string) => {
@@ -34,9 +34,9 @@ export class SocketWebService extends Socket {
   removeEvent = (payload = {}) => {
     this.ioSocket.emit('remove', payload);
   }
-  modifyEvent = (payload: any, activeObjectNames: string[]) => {
-    console.log('evento ', payload, 'activeObjects ', activeObjectNames)
-    this.ioSocket.emit('modify', payload, activeObjectNames);
+  modifyEvent = (payload: any, objects: any) => {
+    console.log(payload);
+    this.ioSocket.emit('modify', payload, objects);
   }
   changeColorEvent = (objectId: string, color: string) => {
     console.log("desde service: ", objectId, color)
