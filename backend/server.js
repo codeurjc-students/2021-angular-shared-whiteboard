@@ -13,24 +13,28 @@ io.on('connection', socket=>{
     socket.join(nameRoom);
     console.log(`Nuevo dispositivo conectado: ${id_handshake} a: ${nameRoom}`);
 
-    socket.on('draw',(res, name)=>{
+    socket.on('objectDrawed',(res, name)=>{
         const drawData = res;
         const nameShape = name;
-        socket.to(nameRoom).emit('draw', drawData, nameShape);
+        socket.to(nameRoom).emit('objectDrawed', drawData, nameShape);
     })
-    socket.on('remove',(res)=>{
+    socket.on('objectRemoved',(res)=>{
         const removeData = res;
-        socket.to(nameRoom).emit('remove', removeData);
+        socket.to(nameRoom).emit('objectRemoved', removeData);
     })
-    socket.on('modify',(res, activeObjectNames)=>{
+    socket.on('objectModified',(res, activeObjectNames)=>{
         const modifyData = res;
         const names = activeObjectNames;
-        socket.to(nameRoom).emit('modify', modifyData,names);
+        socket.to(nameRoom).emit('objectModified', modifyData,names);
     })
     socket.on('colorChanged', (obj, color)=>{
         const objData = obj;
         const shapeColor = color;
         socket.to(nameRoom).emit('colorChanged', objData, shapeColor);
+    })
+    socket.on('textChanged',(res)=>{
+        const textData = res;
+        socket.to(nameRoom).emit('textChanged', textData);
     })
 });
 

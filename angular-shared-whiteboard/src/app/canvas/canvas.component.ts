@@ -1,3 +1,4 @@
+import { AnimationQueryMetadata } from '@angular/animations';
 import { identifierName, ThrowStmt } from '@angular/compiler';
 import { isGeneratedFile } from '@angular/compiler/src/aot/util';
 import { transformAll } from '@angular/compiler/src/render3/r3_ast';
@@ -38,6 +39,10 @@ export class CanvasComponent implements OnInit {
       this.emite = false;
       this.changeColorFromEvent(res);
     })
+    this.socketService.callTextChanged.subscribe((res: any) => {
+      this.emite = false;
+      this.changeTextFromEvent(res)
+    });
   }
 
   ngOnInit(): void {
@@ -65,7 +70,6 @@ export class CanvasComponent implements OnInit {
       }
     });
     this.canvas.on('object:modified', (e) => {
-      if (this.emite) {
         var objects: any[] = [];
         this.canvas.getActiveObjects().forEach((object: any) => {
           objects.push({
@@ -73,17 +77,23 @@ export class CanvasComponent implements OnInit {
             shape: object
           });
         });
-        console.log(this.canvas.getActiveObjects())
-
         this.socketService.modifyEvent(e, objects);
-      }
     });
-  
+    this.canvas.on('text:changed', (e) => {
+        var name = e.target?.name;
+        this.socketService.changeTextEvent(({e, name}));
+    });
   }
+  changeTextFromEvent(res: any) {
+    var object = this.getObjectByName(res.name)
+    object.text = res.e.target.text;
+    this.canvas.renderAll()
+  }
+
   modifyObjectFromEvent(event: any) {
     var target = event.res.target;
     if (target.objects != null) {
-
+      console.log('a')
       // event.objects.forEach((from: any) => {
       //   this.canvas.getObjects().forEach(to => {
       //     if (to.name == from.name) {
@@ -115,42 +125,37 @@ export class CanvasComponent implements OnInit {
       // //   });
       // // });
     } else {
-      event.objects.forEach((from: any) => {
-        this.canvas.getObjects().forEach(to => {
-          if (to.name == from.name) {
-            console.log('modificando from: ', from, ' \n a to: ', to);
-            to.left = from.shape.left;
-            to.top = from.shape.top;
-            to.angle = from.shape.angle;
-            to.scaleX = from.shape.scaleX;
-            to.scaleY = from.shape.scaleY;
-            this.canvas.renderAll();
-            return;
-          }
-        });
-      });
+      var from = event.objects[0];
+      var object = this.getObjectByName(from.name);
+      if (object != null) {
+        object.left = from.shape.left;
+        object.top = from.shape.top;
+        object.angle = from.shape.angle;
+        object.scaleX = from.shape.scaleX;
+        object.scaleY = from.shape.scaleY;
+        object.width = from.shape.width;
+        object.height = from.shape.height;
+        this.canvas.renderAll();
+      }
     }
 
 
   }
   deleteFromEvent(nameToRemove: string): void {
     if (nameToRemove != null) {
-      this.canvas.getObjects().forEach(shape => {
-        if (shape.name == nameToRemove) {
-          this.removeShape(shape)
-        }
-      });
+      var object = this.getObjectByName(nameToRemove);
+      if (object != null)
+        this.removeShape(object)
     }
   }
   changeColorFromEvent(payload: any) {
     if (payload != null) {
-      this.canvas.getObjects().forEach(shape => {
-        console.log(shape.name, payload.obj);
-        if (shape.name == payload.obj) {
-          console.log(shape);
-          shape.set('fill', payload.color);
-        }
-      });
+      var object = this.getObjectByName(payload.obj);
+      console.log(object);
+      if (object != null) {
+        console.log(object);
+        object.set('fill', payload.color);
+      }
       this.canvas.renderAll();
     }
   }
@@ -243,5 +248,15 @@ export class CanvasComponent implements OnInit {
 
   generateObjectId(): string | undefined {
     return Math.floor((Math.random() * 999999) + 1).toString();
+  }
+
+  getObjectByName(n: string): any {
+    var ret: any;
+    this.canvas.getObjects().forEach((object: any) => {
+      if (object.name == n) {
+        ret = object;
+      }
+    });
+    return ret;
   }
 }
