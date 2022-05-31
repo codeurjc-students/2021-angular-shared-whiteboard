@@ -7,6 +7,20 @@ import { HomeComponent } from './home/home.component';
 import { RoomComponent } from './room/room.component';
 import { CookieService } from 'ngx-cookie-service';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { RouterTestingModule } from '@angular/router/testing'
+import { RouterModule, Routes } from '@angular/router';
+
+
+const routes: Routes=[
+  {
+    path:'',
+    component:HomeComponent
+  },
+  {
+    path:':room',
+    component:RoomComponent
+  }
+];
 
 
 @NgModule({
@@ -19,6 +33,8 @@ import { ColorPickerModule } from 'ngx-color-picker';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    RouterModule.forRoot(routes),
+    RouterTestingModule,
     ColorPickerModule
   ],
   providers: [

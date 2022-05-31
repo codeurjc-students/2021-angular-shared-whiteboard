@@ -2,7 +2,6 @@ button {
     position: relative;
     display: inline-block;
     margin: 15px;
-    padding: 15px 30px;
     text-align: center;
     font-size: 18px;
     letter-spacing: 1px;
@@ -15,18 +14,80 @@ button {
     border: 2px solid #725AC1;
     border-radius: 10px;
     box-shadow: inset 0 0 0 0 #725AC1;
-   }
-   
-   button:hover {
+}
+
+button:hover {
     color: white;
     box-shadow: inset 0 -100px 0 0 #725AC1;
-   }
-   
-   button:active {
+}
+
+button:active {
     transform: scale(0.9);
-   }
-.title{
+    background-color: #725AC1;
+}
+.main{
+    margin:40px 0 0 0;
+}
+button {
+    width: 100%;
+  }
+.title {
     background-color: #563d7c;
     font-size: 30px;
     color: white;
+}
+
+#ck-button {
+    position: relative;
+    display: inline-block;
+    margin: 15px;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: #725AC1;
+    background: transparent;
+    cursor: pointer;
+    transition: ease-out 0.5s;
+    border-radius: 30px;
+    border: 2px solid #725AC1;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 0 #725AC1;
+}
+#ck-button-selected {
+    position: relative;
+    display: inline-block;
+    margin: 15px;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: #fff;
+    background: #725AC1;
+    cursor: pointer;
+    transition: ease-out 0.5s;
+    border-radius: 30px;
+    border: 2px solid #725AC1;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 0 #725AC1;
+}
+#ck-button label {
+    float:left;
+    width:4.0em;
+}
+#ck-button-selected label {
+    float:left;
+    width:4.0em;
+}
+#ck-button label input {
+    position:absolute;
+    top:-20px;
+    padding:15px;
+    display:none;
+}
+#ck-button-selected label input {
+    position:absolute;
+    top:-20px;
+    padding:15px;
+    display:none
 }

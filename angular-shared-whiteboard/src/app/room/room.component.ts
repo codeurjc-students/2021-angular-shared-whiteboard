@@ -10,7 +10,7 @@ import { Socket } from 'ngx-socket-io';
 })
 export class RoomComponent implements OnInit {
   room: any;
-  constructor(private router: ActivatedRoute, private cookieService: CookieService) {
+  constructor(private route: ActivatedRoute, private router: ActivatedRoute, private cookieService: CookieService) {
     this.room = this.router.snapshot.paramMap.get('room');
     this.cookieService.set('room', this.room);
   }

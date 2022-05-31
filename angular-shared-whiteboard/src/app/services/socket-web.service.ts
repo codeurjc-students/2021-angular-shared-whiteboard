@@ -37,15 +37,12 @@ export class SocketWebService extends Socket {
     this.ioSocket.emit('objectRemoved', payload);
   }
   modifyEvent = (payload: any, objects: any) => {
-    console.log(payload);
     this.ioSocket.emit('objectModified', payload, objects);
   }
   changeColorEvent = (objectId: string, color: string) => {
-    console.log("desde service: ", objectId, color)
     this.ioSocket.emit('colorChanged', objectId, color);
   }
   changeTextEvent = (payload: {}) => {
-    console.log("desde service: ", payload)
     this.ioSocket.emit('textChanged', payload);
   }
 }
