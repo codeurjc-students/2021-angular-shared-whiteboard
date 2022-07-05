@@ -29,8 +29,9 @@ button:active {
     margin:40px 0 0 0;
 }
 button {
-    width: 100%;
+    width:100%
   }
+
 .title {
     background-color: #563d7c;
     font-size: 30px;
@@ -90,4 +91,8 @@ button {
     top:-20px;
     padding:15px;
     display:none
+}
+#btnshape{
+    display: list-item;
+    width: 50%;
 }

@@ -21,6 +21,7 @@ export class CanvasComponent implements OnInit {
 
     this.socketService.callDraw.subscribe((res: any) => {
       this.emite = false;
+      console.log(res);
       this.drawFromEvent(res)
     });
     this.socketService.callRemove.subscribe((res: any) => {
@@ -50,7 +51,7 @@ export class CanvasComponent implements OnInit {
     this.canvas = new fabric.Canvas('canvas');
     this.isDrawButtonActive = this.canvas.isDrawingMode;
     this.canvas.on('object:added', (e) => {
-
+      console.log(e);
       if (this.emite) {
         if (e.target?.name != null) {
           this.socketService.drawEvent(e, e.target?.name?.toString());
@@ -152,8 +153,12 @@ export class CanvasComponent implements OnInit {
           if (pathValue != null)
             this.canvas.add(new fabric.Path(pathValue, newTarget));
           break;
+        case "line":
+          console.log("switch", target);
+          this.canvas.add(new fabric.Line([350, 100, 350, 400], newTarget));
+          break;
         default:
-          console.log('Target type is null')
+          console.log('Target type not valid: ', target.type);
       }
     }
   }
@@ -192,7 +197,12 @@ export class CanvasComponent implements OnInit {
       width: 100, height: 100, left: 100, top: 100, fill: this.selectedColor, angle: 45, radius: 50, name: this.generateObjectId()
     }))
   }
-
+  onClick_drawLineButton(): void {
+    this.emite = true;
+    this.canvas.add(new fabric.Line([350, 100, 350, 400], {
+      height: 100, left: 100, top: 100, stroke: this.selectedColor, name: this.generateObjectId()
+    }))
+  }
   onClick_drawRectButton(): void {
     this.emite = true;
     this.canvas.add(new fabric.Rect({
@@ -210,7 +220,7 @@ export class CanvasComponent implements OnInit {
   onClick_changeColor(): void {
     var activeObjects = this.canvas.getActiveObjects();
     activeObjects.forEach(o => {
-      if (o.type == 'path') {
+      if (o.type == 'path' || o.type == 'line') {
         o.set('stroke', this.selectedColor);
       } else {
         o.set('fill', this.selectedColor);
@@ -227,16 +237,13 @@ export class CanvasComponent implements OnInit {
     if (this.canvas.isDrawingMode)
       this.canvas.freeDrawingBrush.color = color;
   }
-
   removeShape(s: fabric.Object) {
     if (s == null) return;
     this.canvas.remove(s);
   }
-
   generateObjectId(): string | undefined {
     return uuid.v4();
   }
-
   getObjectByName(n: string): fabric.Object {
     var ret: any;
     this.canvas.getObjects().forEach((object: any) => {

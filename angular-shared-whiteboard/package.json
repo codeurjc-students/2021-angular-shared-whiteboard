@@ -8,6 +8,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "jest"
   },
+  "jest": {
+    "testPathDirs": ["src"],
+    "setupTestFrameworkScriptFile": "src/canvas.test.js"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.0",

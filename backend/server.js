@@ -16,6 +16,7 @@ io.on('connection', socket=>{
     socket.on('objectDrawed',(res, name)=>{
         const drawData = res;
         const nameShape = name;
+        console.log(drawData, "server");
         socket.to(nameRoom).emit('objectDrawed', drawData, nameShape);
     })
     socket.on('objectRemoved',(res)=>{
