@@ -88,7 +88,7 @@ export class CanvasComponent implements OnInit {
     });
   }
   changeTextFromEvent(res: any) {
-    var object = this.getObjectByName(res.name) as fabric.Text
+    var object = this.getObjectById(res.name) as fabric.Text
     object.text = res.e.target.text;
     this.canvas.renderAll()
   }
@@ -99,7 +99,7 @@ export class CanvasComponent implements OnInit {
       console.log('Multiple objects not available.')
     } else {
       var from = event.objects[0];
-      var object = this.getObjectByName(from.name);
+      var object = this.getObjectById(from.name);
       if (object != null) {
         object.left = from.shape.left;
         object.top = from.shape.top;
@@ -116,14 +116,14 @@ export class CanvasComponent implements OnInit {
   }
   deleteFromEvent(nameToRemove: string): void {
     if (nameToRemove != null) {
-      var object = this.getObjectByName(nameToRemove);
+      var object = this.getObjectById(nameToRemove);
       if (object != null)
         this.removeShape(object)
     }
   }
   changeColorFromEvent(payload: any) {
     if (payload != null) {
-      var object = this.getObjectByName(payload.obj);
+      var object = this.getObjectById(payload.obj);
       if (object != null) {
         if (object.type == 'path') {
           object.set('stroke', payload.color);
@@ -244,7 +244,7 @@ export class CanvasComponent implements OnInit {
   generateObjectId(): string | undefined {
     return uuid.v4();
   }
-  getObjectByName(n: string): fabric.Object {
+  getObjectById(n: string): fabric.Object {
     var ret: any;
     this.canvas.getObjects().forEach((object: any) => {
       if (object.name == n) {

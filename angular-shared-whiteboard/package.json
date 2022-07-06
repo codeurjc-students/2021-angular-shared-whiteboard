@@ -10,7 +10,7 @@
   },
   "jest": {
     "testPathDirs": ["src"],
-    "setupTestFrameworkScriptFile": "src/canvas.test.js"
+    "setupTestFrameworkScriptFile": "src/app/test.js"
   },
   "private": true,
   "dependencies": {

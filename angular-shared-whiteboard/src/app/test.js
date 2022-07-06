@@ -18,7 +18,6 @@ describe('testing', () => {
         test('it should insert text in canvas1', async () => {
             let btnText = await driver1.findElement(By.id('btnText'));
             var button = driver1.wait(until.elementsLocated(By.id('btnText'), 10000));
-
             
             await btnText.click();
         });
