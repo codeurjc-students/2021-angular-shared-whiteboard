@@ -21,7 +21,6 @@ export class CanvasComponent implements OnInit {
 
     this.socketService.callDraw.subscribe((res: any) => {
       this.emite = false;
-      console.log(res);
       this.drawFromEvent(res)
     });
     this.socketService.callRemove.subscribe((res: any) => {
@@ -51,7 +50,6 @@ export class CanvasComponent implements OnInit {
     this.canvas = new fabric.Canvas('canvas');
     this.isDrawButtonActive = this.canvas.isDrawingMode;
     this.canvas.on('object:added', (e) => {
-      console.log(e);
       if (this.emite) {
         if (e.target?.name != null) {
           this.socketService.drawEvent(e, e.target?.name?.toString());
@@ -154,7 +152,6 @@ export class CanvasComponent implements OnInit {
             this.canvas.add(new fabric.Path(pathValue, newTarget));
           break;
         case "line":
-          console.log("switch", target);
           this.canvas.add(new fabric.Line([350, 100, 350, 400], newTarget));
           break;
         default:
@@ -232,7 +229,7 @@ export class CanvasComponent implements OnInit {
     this.canvas.renderAll();
 
   }
-  public onChangeColor(color: string): void {
+  onChangeColor(color: string): void {
     this.selectedColor = color;
     if (this.canvas.isDrawingMode)
       this.canvas.freeDrawingBrush.color = color;
@@ -253,4 +250,5 @@ export class CanvasComponent implements OnInit {
     });
     return ret;
   }
+ 
 }
