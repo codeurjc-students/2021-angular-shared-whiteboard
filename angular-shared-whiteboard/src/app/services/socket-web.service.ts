@@ -31,7 +31,6 @@ export class SocketWebService extends Socket {
     this.ioSocket.on('colorChanged', (obj: string, color: string) => this.callChangeColor.emit({ obj, color }))
   }
   drawEvent = (payload: any, name: string) => {
-    console.log(payload,"service");
     this.ioSocket.emit('objectDrawed', payload, name);
   }
   removeEvent = (payload = {}) => {

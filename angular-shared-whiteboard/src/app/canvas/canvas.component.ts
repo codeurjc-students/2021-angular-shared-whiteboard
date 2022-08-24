@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { fabric } from 'fabric';
-import { Cmyk, ColorPickerService } from 'ngx-color-picker';
 import { SocketWebService } from '../services/socket-web.service';
 import * as uuid from 'uuid';
+import { ThisReceiver } from '@angular/compiler';
 
 @Component({
   selector: 'app-canvas',
@@ -12,9 +12,11 @@ import * as uuid from 'uuid';
 export class CanvasComponent implements OnInit {
 
   selectedColor: string = '#000000';
-  private canvas = new fabric.Canvas('canvas');
+  sak = "";
+  public canvas = new fabric.Canvas('canvas');
   private emite: boolean = true;
-  public isShown = false;
+  isColorShown = false;
+  isImageShown = false;
   public isDrawButtonActive?= false;
 
   constructor(private socketService: SocketWebService) {
@@ -42,11 +44,15 @@ export class CanvasComponent implements OnInit {
   }
 
 
-  toggleShow() {
-    this.isShown = !this.isShown;
+  showCanvasComponent() {
+    this.isColorShown = !this.isColorShown;
+  }
+  showImageURL() {
+    this.isImageShown = !this.isImageShown;
   }
   ngOnInit(): void {
-    this.isShown = false; //hidden every time subscribe detects change
+    this.isColorShown = false; //hidden every time subscribe detects change
+    this.isImageShown = false;
     this.canvas = new fabric.Canvas('canvas');
     this.isDrawButtonActive = this.canvas.isDrawingMode;
     this.canvas.on('object:added', (e) => {
@@ -96,8 +102,10 @@ export class CanvasComponent implements OnInit {
     if (target.objects != null) {
       console.log('Multiple objects not available.')
     } else {
+      console.log(event);
       var from = event.objects[0];
       var object = this.getObjectById(from.name);
+      console.log(object);
       if (object != null) {
         object.left = from.shape.left;
         object.top = from.shape.top;
@@ -153,6 +161,9 @@ export class CanvasComponent implements OnInit {
           break;
         case "line":
           this.canvas.add(new fabric.Line([350, 100, 350, 400], newTarget));
+          break;
+        case "image":
+          this.insertImageToCanvas(target.src, e.name, newTarget.scaleX!=null? newTarget.scaleX : 0.5);
           break;
         default:
           console.log('Target type not valid: ', target.type);
@@ -214,6 +225,18 @@ export class CanvasComponent implements OnInit {
       this.removeShape(shape);
     });
   }
+  onClick_drawArrowButton(): void {
+
+  }
+  onClick_AddImage(): void {
+    this.emite = true;
+    var url = document.getElementById('imageInput') as HTMLInputElement;
+    console.log(url.value);
+    var image = new fabric.Image(url.value);
+    var id = this.generateObjectId();
+    this.insertImageToCanvas(url.value, id, 0.5);
+
+  }
   onClick_changeColor(): void {
     var activeObjects = this.canvas.getActiveObjects();
     activeObjects.forEach(o => {
@@ -234,11 +257,19 @@ export class CanvasComponent implements OnInit {
     if (this.canvas.isDrawingMode)
       this.canvas.freeDrawingBrush.color = color;
   }
+  insertImageToCanvas(url:string, id:string, scale:number): void {
+    fabric.Image.fromURL(url, img => {
+        img.scale(scale);
+        img.name=id;
+      this.canvas.add(img);
+      this.canvas.renderAll();
+    });
+  }
   removeShape(s: fabric.Object) {
     if (s == null) return;
     this.canvas.remove(s);
   }
-  generateObjectId(): string | undefined {
+  generateObjectId(): string {
     return uuid.v4();
   }
   getObjectById(n: string): fabric.Object {
@@ -250,5 +281,5 @@ export class CanvasComponent implements OnInit {
     });
     return ret;
   }
- 
+
 }

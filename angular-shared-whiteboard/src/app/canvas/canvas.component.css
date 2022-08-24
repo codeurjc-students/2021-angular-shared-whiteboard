@@ -94,5 +94,17 @@ button {
 }
 #btnshape{
     display: list-item;
-    width: 50%;
+    width: fit-content;
 }
+.imageUrlInput button {
+    width: fit-content;
+    margin: auto;
+  }
+  .imageUrlInput {
+    width: fit-content;
+    margin: auto;
+    border-radius: 10px;
+    border: #725AC1;
+    padding: 20px;
+    border-style: solid;
+  }
