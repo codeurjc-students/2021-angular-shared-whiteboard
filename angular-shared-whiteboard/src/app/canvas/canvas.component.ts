@@ -18,6 +18,19 @@ export class CanvasComponent implements OnInit {
   isColorShown = false;
   isImageShown = false;
   public isDrawButtonActive?= false;
+  private arrow1 = [{x:20,y:40},{x:110,y:40},
+     {x:110,y:20},{x:140,y:50},{x:110,y:80}, 
+     {x:110,y:60},{x:20,y:60}, {x:20,y:40} ]  ;
+
+  private arrow2 = [{x:20,y:50},{x:139,y:50},
+     {x:110,y:30},{x:111,y:30},{x:141,y:50},
+     {x:141,y:51},
+     {x:111,y:70},{x:110,y:70}, {x:139,y:50},
+     {x:20,y:51}]  ;
+
+  private arrow3 = [{x:20,y:50},{x:110,y:50},
+     {x:110,y:30},{x:140,y:50},{x:110,y:70}, 
+     {x:110,y:50} ]  ;
 
   constructor(private socketService: SocketWebService) {
 
@@ -51,22 +64,15 @@ export class CanvasComponent implements OnInit {
     this.isImageShown = !this.isImageShown;
   }
   ngOnInit(): void {
-    this.isColorShown = false; //hidden every time subscribe detects change
+    this.isColorShown = false;
     this.isImageShown = false;
     this.canvas = new fabric.Canvas('canvas');
     this.isDrawButtonActive = this.canvas.isDrawingMode;
+    
     this.canvas.on('object:added', (e) => {
       if (this.emite) {
         if (e.target?.name != null) {
           this.socketService.drawEvent(e, e.target?.name?.toString());
-        } else {
-          if (e != null && e.target != null) {
-            let name = this.generateObjectId();
-            if (name != null) {
-              e.target.name = name;
-              this.socketService.drawEvent(e, name);
-            }
-          }
         }
       }
     });
@@ -102,10 +108,8 @@ export class CanvasComponent implements OnInit {
     if (target.objects != null) {
       console.log('Multiple objects not available.')
     } else {
-      console.log(event);
       var from = event.objects[0];
       var object = this.getObjectById(from.name);
-      console.log(object);
       if (object != null) {
         object.left = from.shape.left;
         object.top = from.shape.top;
@@ -143,7 +147,9 @@ export class CanvasComponent implements OnInit {
   drawFromEvent(e: any): void {
     if (e != null) {
       var target = e.res.target;
+      console.log(target);
       var newTarget = this.addObjectIdToTargetOptions(target, e.name);
+      console.log(newTarget);
       switch (target.type) {
         case "rect":
           this.canvas.add(new fabric.Rect(newTarget))
@@ -156,9 +162,12 @@ export class CanvasComponent implements OnInit {
           break;
         case "path":
           var pathValue = this.mapPathFromEvent(e);
-          if (pathValue != null)
             this.canvas.add(new fabric.Path(pathValue, newTarget));
           break;
+          case "polyline":
+            console.log(e);
+            this.canvas.add(new fabric.Polyline(target.points, newTarget))
+            break;
         case "line":
           this.canvas.add(new fabric.Line([350, 100, 350, 400], newTarget));
           break;
@@ -189,7 +198,7 @@ export class CanvasComponent implements OnInit {
   onClick_drawTextButton(): void {
     this.emite = true;
     this.canvas.isDrawingMode = false;
-    this.canvas.add(new fabric.Textbox('Insert text'));
+    this.canvas.add(new fabric.Textbox('Insert text',{name:this.generateObjectId()}));
   }
 
   checkFreeDrawValue() {
@@ -225,13 +234,21 @@ export class CanvasComponent implements OnInit {
       this.removeShape(shape);
     });
   }
-  onClick_drawArrowButton(): void {
-
+  onClick_drawArrow1Button(): void {
+    this.emite = true;
+    this.drawArrow(this.arrow1);
+  }
+  onClick_drawArrow2Button(): void {
+    this.emite = true;
+    this.drawArrow(this.arrow2);
+  }
+  onClick_drawArrow3Button(): void {
+    this.emite = true;
+    this.drawArrow(this.arrow3);
   }
   onClick_AddImage(): void {
     this.emite = true;
     var url = document.getElementById('imageInput') as HTMLInputElement;
-    console.log(url.value);
     var image = new fabric.Image(url.value);
     var id = this.generateObjectId();
     this.insertImageToCanvas(url.value, id, 0.5);
@@ -256,6 +273,22 @@ export class CanvasComponent implements OnInit {
     this.selectedColor = color;
     if (this.canvas.isDrawingMode)
       this.canvas.freeDrawingBrush.color = color;
+  }
+  drawArrow(arrow: {x:number;y:number}[]) {
+    var pline = new fabric.Polyline(arrow, {
+      fill: 'white',
+      stroke: this.selectedColor,
+      opacity: 1,
+      strokeWidth: 2,
+      originX: 'left',
+      originY: 'top',
+      selectable: true,
+      name:this.generateObjectId()
+    });
+  
+    this.canvas.add(pline);
+    this.canvas.renderAll();
+  
   }
   insertImageToCanvas(url:string, id:string, scale:number): void {
     fabric.Image.fromURL(url, img => {
