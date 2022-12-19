@@ -132,7 +132,7 @@ export class CanvasComponent implements OnInit {
     // var deltaX = line.left - centerX,
     //   deltaY = line.top - centerY;
 
-
+    var arrowName=this.generateObjectId();
     var arrow = new fabric.Triangle({
       // left:  100 + deltaX,
       left: 100,
@@ -145,7 +145,7 @@ export class CanvasComponent implements OnInit {
       width: 20,
       height: 20,
       fill: '#000',
-      name: 'arrowStart' + this.generateObjectId(),
+      name: 'arrowStart' + arrowName,
     });
     var line = new fabric.Line([50, 50, arrow.left, arrow.top], {
       stroke: '#000',
@@ -154,7 +154,7 @@ export class CanvasComponent implements OnInit {
       padding: 5,
       originX: 'center',
       originY: 'center',
-      name: 'arrowLine' + this.generateObjectId(),
+      name: 'arrowLine' + arrowName,
     });
    var circle = new fabric.Circle({
       left: line.get('x1'),
@@ -169,11 +169,11 @@ export class CanvasComponent implements OnInit {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
-      name: 'arrow_end'+this.generateObjectId(),
+      name: 'arrowEnd'+arrowName,
       fill: '#000'
   });
     arrow.on('moving', (e) => {
-      var line = this.canvas.getObjects().find(object => object.name?.startsWith("arrowLine", 0)) as fabric.Line;
+      var line = this.getObjectById('arrowLine'+arrowName) as fabric.Line;
       this.canvas.remove(line);
       var newLine = new fabric.Line([circle.left,circle.top,arrow.left, arrow.top], {
         stroke: '#000',
@@ -182,7 +182,7 @@ export class CanvasComponent implements OnInit {
         padding: 5,
         originX: 'center',
         originY: 'center',
-        name: 'arrowLine' + this.generateObjectId(),
+        name: 'arrowLine' + arrowName,
         
       });
       arrow.angle=this.calcArrowAngle(line.get('x1'),line.get('y1') , line.get('x2'), line.get('y2'));
@@ -192,8 +192,8 @@ export class CanvasComponent implements OnInit {
     });
   
     circle.on('moving',(e)=>{
-      var line = this.canvas.getObjects().find(object => object.name?.startsWith("arrowLine", 0)) as fabric.Line;
-      var arrow = this.canvas.getObjects().find(object => object.name?.startsWith("arrowStart", 0)) ;
+      var line = this.getObjectById('arrowLine'+arrowName) as fabric.Line;
+      var arrow = this.getObjectById('arrowStart'+arrowName) as fabric.Triangle;
       this.canvas.remove(line);
       var newLine = new fabric.Line([circle.left,circle.top,arrow.left, arrow.top], {
         stroke: '#000',
@@ -203,7 +203,7 @@ export class CanvasComponent implements OnInit {
         padding: 5,
         originX: 'center',
         originY: 'center',
-        name: 'arrowLine' + this.generateObjectId(),
+        name: 'arrowLine' + arrowName,
       });
       arrow.angle=this.calcArrowAngle(line.get('x1'),line.get('y1') , line.get('x2'), line.get('y2'));
       this.canvas.add(newLine);
