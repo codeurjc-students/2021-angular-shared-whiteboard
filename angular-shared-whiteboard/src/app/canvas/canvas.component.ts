@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { fabric } from 'fabric';
 import { SocketWebService } from '../services/socket-web.service';
 import * as uuid from 'uuid';
-import { ThisReceiver } from '@angular/compiler';
 
 @Component({
   selector: 'app-canvas',
@@ -18,19 +17,20 @@ export class CanvasComponent implements OnInit {
   isColorShown = false;
   isImageShown = false;
   public isDrawButtonActive?= false;
-  private arrow1 = [{x:20,y:40},{x:110,y:40},
-     {x:110,y:20},{x:140,y:50},{x:110,y:80}, 
-     {x:110,y:60},{x:20,y:60}, {x:20,y:40} ]  ;
+  group: fabric.Group;
+  private arrow1 = [{ x: 20, y: 40 }, { x: 110, y: 40 },
+  { x: 110, y: 20 }, { x: 140, y: 50 }, { x: 110, y: 80 },
+  { x: 110, y: 60 }, { x: 20, y: 60 }, { x: 20, y: 40 }];
 
-  private arrow2 = [{x:20,y:50},{x:139,y:50},
-     {x:110,y:30},{x:111,y:30},{x:141,y:50},
-     {x:141,y:51},
-     {x:111,y:70},{x:110,y:70}, {x:139,y:50},
-     {x:20,y:51}]  ;
+  private arrow2 = [{ x: 20, y: 50 }, { x: 139, y: 50 },
+  { x: 110, y: 30 }, { x: 111, y: 30 }, { x: 141, y: 50 },
+  { x: 141, y: 51 },
+  { x: 111, y: 70 }, { x: 110, y: 70 }, { x: 139, y: 50 },
+  { x: 20, y: 51 }];
 
-  private arrow3 = [{x:20,y:50},{x:110,y:50},
-     {x:110,y:30},{x:140,y:50},{x:110,y:70}, 
-     {x:110,y:50} ]  ;
+  private arrow3 = [{ x: 20, y: 50 }, { x: 110, y: 50 },
+  { x: 110, y: 30 }, { x: 140, y: 50 }, { x: 110, y: 70 },
+  { x: 110, y: 50 }];
 
   constructor(private socketService: SocketWebService) {
 
@@ -68,7 +68,9 @@ export class CanvasComponent implements OnInit {
     this.isImageShown = false;
     this.canvas = new fabric.Canvas('canvas');
     this.isDrawButtonActive = this.canvas.isDrawingMode;
-    
+
+
+
     this.canvas.on('object:added', (e) => {
       if (this.emite) {
         if (e.target?.name != null) {
@@ -121,8 +123,114 @@ export class CanvasComponent implements OnInit {
         this.canvas.renderAll();
       }
     }
+  }
+
+  addArrowToCanvas() {
+
+    // var centerX = (line.x1 + line.x2) / 2,
+    //   centerY = (line.y1 + line.y2) / 2;
+    // var deltaX = line.left - centerX,
+    //   deltaY = line.top - centerY;
 
 
+    var arrow = new fabric.Triangle({
+      // left:  100 + deltaX,
+      left: 100,
+      // top: 50 + deltaY,
+      top: 50,
+      originX: 'center',
+      originY: 'center',
+      type: 'arrow_start',
+      angle: 90,
+      width: 20,
+      height: 20,
+      fill: '#000',
+      name: 'arrowStart' + this.generateObjectId(),
+    });
+    var line = new fabric.Line([50, 50, arrow.left, arrow.top], {
+      stroke: '#000',
+      selectable: false,
+      strokeWidth: 2,
+      padding: 5,
+      originX: 'center',
+      originY: 'center',
+      name: 'arrowLine' + this.generateObjectId(),
+    });
+   var circle = new fabric.Circle({
+      left: line.get('x1'),
+      top: line.get('y1'),
+      radius: 3,
+      stroke: '#000',
+      strokeWidth: 3,
+      originX: 'center',
+      originY: 'center',
+      hasBorders: false,
+      hasControls: false,
+      lockScalingX: true,
+      lockScalingY: true,
+      lockRotation: true,
+      name: 'arrow_end'+this.generateObjectId(),
+      fill: '#000'
+  });
+    arrow.on('moving', (e) => {
+      var line = this.canvas.getObjects().find(object => object.name?.startsWith("arrowLine", 0)) as fabric.Line;
+      this.canvas.remove(line);
+      var newLine = new fabric.Line([circle.left,circle.top,arrow.left, arrow.top], {
+        stroke: '#000',
+        selectable: false,
+        strokeWidth: 2,
+        padding: 5,
+        originX: 'center',
+        originY: 'center',
+        name: 'arrowLine' + this.generateObjectId(),
+        
+      });
+      arrow.angle=this.calcArrowAngle(line.get('x1'),line.get('y1') , line.get('x2'), line.get('y2'));
+      this.canvas.add(newLine);
+      this.canvas.renderAll(); 
+
+    });
+  
+    circle.on('moving',(e)=>{
+      var line = this.canvas.getObjects().find(object => object.name?.startsWith("arrowLine", 0)) as fabric.Line;
+      var arrow = this.canvas.getObjects().find(object => object.name?.startsWith("arrowStart", 0)) ;
+      this.canvas.remove(line);
+      var newLine = new fabric.Line([circle.left,circle.top,arrow.left, arrow.top], {
+        stroke: '#000',
+        selectable: false,
+        width:circle.width,
+        strokeWidth: 2,
+        padding: 5,
+        originX: 'center',
+        originY: 'center',
+        name: 'arrowLine' + this.generateObjectId(),
+      });
+      arrow.angle=this.calcArrowAngle(line.get('x1'),line.get('y1') , line.get('x2'), line.get('y2'));
+      this.canvas.add(newLine);
+      this.canvas.renderAll(); 
+    })
+    console.log(line);
+    this.canvas.add(circle);
+    this.canvas.add(arrow);
+    this.canvas.add(line);
+  }
+ 
+  calcArrowAngle(x1: any, y1: any, x2: any, y2: any) {
+    var angle = 0,
+      x, y;
+
+    x = (x2 - x1);
+    y = (y2 - y1);
+
+    if (x === 0) {
+      angle = (y === 0) ? 0 : (y > 0) ? Math.PI / 2 : Math.PI * 3 / 2;
+    } else if (y === 0) {
+      angle = (x > 0) ? 0 : Math.PI;
+    } else {
+      angle = (x < 0) ? Math.atan(y / x) + Math.PI : (y < 0) ? Math.atan(y / x) + (2 * Math.PI) : Math.atan(y / x);
+    }
+
+    return (angle * 180 / Math.PI)+90;
   }
   deleteFromEvent(nameToRemove: string): void {
     if (nameToRemove != null) {
@@ -147,9 +255,7 @@ export class CanvasComponent implements OnInit {
   drawFromEvent(e: any): void {
     if (e != null) {
       var target = e.res.target;
-      console.log(target);
       var newTarget = this.addObjectIdToTargetOptions(target, e.name);
-      console.log(newTarget);
       switch (target.type) {
         case "rect":
           this.canvas.add(new fabric.Rect(newTarget))
@@ -162,17 +268,16 @@ export class CanvasComponent implements OnInit {
           break;
         case "path":
           var pathValue = this.mapPathFromEvent(e);
-            this.canvas.add(new fabric.Path(pathValue, newTarget));
+          this.canvas.add(new fabric.Path(pathValue, newTarget));
           break;
-          case "polyline":
-            console.log(e);
-            this.canvas.add(new fabric.Polyline(target.points, newTarget))
-            break;
+        case "polyline":
+          this.canvas.add(new fabric.Polyline(target.points, newTarget))
+          break;
         case "line":
           this.canvas.add(new fabric.Line([350, 100, 350, 400], newTarget));
           break;
         case "image":
-          this.insertImageToCanvas(target.src, e.name, newTarget.scaleX!=null? newTarget.scaleX : 0.5);
+          this.insertImageToCanvas(target.src, e.name, newTarget.scaleX != null ? newTarget.scaleX : 0.5);
           break;
         default:
           console.log('Target type not valid: ', target.type);
@@ -198,7 +303,7 @@ export class CanvasComponent implements OnInit {
   onClick_drawTextButton(): void {
     this.emite = true;
     this.canvas.isDrawingMode = false;
-    this.canvas.add(new fabric.Textbox('Insert text',{name:this.generateObjectId()}));
+    this.canvas.add(new fabric.Textbox('Insert text', { name: this.generateObjectId() }));
   }
 
   checkFreeDrawValue() {
@@ -235,8 +340,11 @@ export class CanvasComponent implements OnInit {
     });
   }
   onClick_drawArrow1Button(): void {
-    this.emite = true;
-    this.drawArrow(this.arrow1);
+    // this.emite = true;
+    // this.drawArrow(this.arrow1);
+
+    this.addArrowToCanvas();
+
   }
   onClick_drawArrow2Button(): void {
     this.emite = true;
@@ -249,10 +357,8 @@ export class CanvasComponent implements OnInit {
   onClick_AddImage(): void {
     this.emite = true;
     var url = document.getElementById('imageInput') as HTMLInputElement;
-    var image = new fabric.Image(url.value);
     var id = this.generateObjectId();
     this.insertImageToCanvas(url.value, id, 0.5);
-
   }
   onClick_changeColor(): void {
     var activeObjects = this.canvas.getActiveObjects();
@@ -274,7 +380,7 @@ export class CanvasComponent implements OnInit {
     if (this.canvas.isDrawingMode)
       this.canvas.freeDrawingBrush.color = color;
   }
-  drawArrow(arrow: {x:number;y:number}[]) {
+  drawArrow(arrow: { x: number; y: number }[]) {
     var pline = new fabric.Polyline(arrow, {
       fill: 'white',
       stroke: this.selectedColor,
@@ -283,17 +389,17 @@ export class CanvasComponent implements OnInit {
       originX: 'left',
       originY: 'top',
       selectable: true,
-      name:this.generateObjectId()
+      name: this.generateObjectId()
     });
-  
+
     this.canvas.add(pline);
     this.canvas.renderAll();
-  
+
   }
-  insertImageToCanvas(url:string, id:string, scale:number): void {
+  insertImageToCanvas(url: string, id: string, scale: number): void {
     fabric.Image.fromURL(url, img => {
-        img.scale(scale);
-        img.name=id;
+      img.scale(scale);
+      img.name = id;
       this.canvas.add(img);
       this.canvas.renderAll();
     });
