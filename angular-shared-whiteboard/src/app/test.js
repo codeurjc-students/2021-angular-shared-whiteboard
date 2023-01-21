@@ -5,14 +5,18 @@ describe('testing', () => {
     try {
         jest.setTimeout(60000);
 
-        let driver1 = new Builder().forBrowser('firefox').build();
+
         test('it should open a browser', async () => {
+            let driver1 = new Builder().forBrowser('firefox').build();
             await driver1.get('localhost:4200/sala1');
+
+            let driver2 = new Builder().forBrowser('firefox').build();
+            await driver2.get('localhost:4200/sala1');
+
+            
         });
 
-        let driver2 = new Builder().forBrowser('firefox').build();
         test('it should open another browser', async () => {
-            await driver2.get('localhost:4200/sala1');
         });
 
         test('it should insert text in canvas1', async () => {
@@ -41,8 +45,8 @@ describe('testing', () => {
                     try {
                         let canvas = await driver2.findElement(By.id('canvas'));
                         await canvas.getAttribute("outerHTML").then(async function (w) {
-                            canvasFabric = new fabric.Canvas(w,{width: 500, height:500});
-                            
+                            canvasFabric = new fabric.Canvas(w, { width: 500, height: 500 });
+
                             console.log(canvasFabric.getObjects());
                         })
                     } catch (e) {

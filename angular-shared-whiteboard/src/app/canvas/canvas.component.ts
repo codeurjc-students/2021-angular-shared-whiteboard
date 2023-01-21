@@ -69,8 +69,6 @@ export class CanvasComponent implements OnInit {
     this.canvas = new fabric.Canvas('canvas');
     this.isDrawButtonActive = this.canvas.isDrawingMode;
 
-
-
     this.canvas.on('object:added', (e) => {
       if (this.emite) {
         if (e.target?.name != null) {
@@ -147,6 +145,7 @@ export class CanvasComponent implements OnInit {
       originX: 'center',
       originY: 'center',
       name: 'arrowLine' + arrowName,
+      type: 'arrow',
     });
     var circle = new fabric.Circle({
       left: line.get('x1'),
@@ -162,6 +161,7 @@ export class CanvasComponent implements OnInit {
       lockScalingY: true,
       lockRotation: true,
       name: 'arrowEnd' + arrowName,
+      type: 'arrow',
       fill: '#000'
     });
     arrow.on('moving', (e) => {
@@ -175,14 +175,16 @@ export class CanvasComponent implements OnInit {
         originX: 'center',
         originY: 'center',
         name: 'arrowLine' + arrowName,
-
+        type: 'arrow',
       });
       arrow.angle = this.calcArrowAngle(line.get('x1'), line.get('y1'), line.get('x2'), line.get('y2'));
       this.canvas.add(newLine);
       this.canvas.renderAll();
 
     });
-
+    line.on('mousedblclick',()=>{
+      this.canvas.remove(line);
+    })
     circle.on('moving', (e) => {
       var line = this.getObjectById('arrowLine' + arrowName) as fabric.Line;
       var arrow = this.getObjectById('arrowStart' + arrowName) as fabric.Triangle;
@@ -197,11 +199,13 @@ export class CanvasComponent implements OnInit {
         originX: 'center',
         originY: 'center',
         name: 'arrowLine' + arrowName,
+        type: 'arrow',
       });
       arrow.angle = this.calcArrowAngle(line.get('x1'), line.get('y1'), line.get('x2'), line.get('y2'));
       this.canvas.add(newLine);
       this.canvas.renderAll();
     })
+    
     this.canvas.add(circle);
     this.canvas.add(arrow);
     this.canvas.add(line);
@@ -253,6 +257,7 @@ export class CanvasComponent implements OnInit {
           this.canvas.add(new fabric.Rect(newTarget))
           break;
         case "circle":
+          console.log(e);
           this.canvas.add(new fabric.Circle(newTarget));
           break;
         case "textbox":
@@ -272,6 +277,7 @@ export class CanvasComponent implements OnInit {
           this.insertImageToCanvas(target.src, e.name, newTarget.scaleX != null ? newTarget.scaleX : 0.5);
           break;
         case "arrow":
+          console.log(e);
           this.addArrowToCanvas();
           break;
         default:
@@ -331,11 +337,13 @@ export class CanvasComponent implements OnInit {
     this.emite = true;
     var selectedObjects = this.canvas.getActiveObjects();
     selectedObjects.forEach(shape => {
+      console.log(shape.selectable);
+      shape.selectable=true;
       this.removeShape(shape);
     });
   }
   onClick_drawArrow1Button(): void {
-    // this.emite = true;
+    this.emite = true;
     // this.drawArrow(this.arrow1);
 
     this.addArrowToCanvas();
