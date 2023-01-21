@@ -126,21 +126,13 @@ export class CanvasComponent implements OnInit {
   }
 
   addArrowToCanvas() {
-
-    // var centerX = (line.x1 + line.x2) / 2,
-    //   centerY = (line.y1 + line.y2) / 2;
-    // var deltaX = line.left - centerX,
-    //   deltaY = line.top - centerY;
-
-    var arrowName=this.generateObjectId();
+    var arrowName = this.generateObjectId();
     var arrow = new fabric.Triangle({
-      // left:  100 + deltaX,
       left: 100,
-      // top: 50 + deltaY,
       top: 50,
       originX: 'center',
       originY: 'center',
-      type: 'arrow_start',
+      type: 'arrow',
       angle: 90,
       width: 20,
       height: 20,
@@ -156,7 +148,7 @@ export class CanvasComponent implements OnInit {
       originY: 'center',
       name: 'arrowLine' + arrowName,
     });
-   var circle = new fabric.Circle({
+    var circle = new fabric.Circle({
       left: line.get('x1'),
       top: line.get('y1'),
       radius: 3,
@@ -169,13 +161,13 @@ export class CanvasComponent implements OnInit {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
-      name: 'arrowEnd'+arrowName,
+      name: 'arrowEnd' + arrowName,
       fill: '#000'
-  });
+    });
     arrow.on('moving', (e) => {
-      var line = this.getObjectById('arrowLine'+arrowName) as fabric.Line;
+      var line = this.getObjectById('arrowLine' + arrowName) as fabric.Line;
       this.canvas.remove(line);
-      var newLine = new fabric.Line([circle.left,circle.top,arrow.left, arrow.top], {
+      var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
         stroke: '#000',
         selectable: false,
         strokeWidth: 2,
@@ -183,38 +175,38 @@ export class CanvasComponent implements OnInit {
         originX: 'center',
         originY: 'center',
         name: 'arrowLine' + arrowName,
-        
+
       });
-      arrow.angle=this.calcArrowAngle(line.get('x1'),line.get('y1') , line.get('x2'), line.get('y2'));
+      arrow.angle = this.calcArrowAngle(line.get('x1'), line.get('y1'), line.get('x2'), line.get('y2'));
       this.canvas.add(newLine);
-      this.canvas.renderAll(); 
+      this.canvas.renderAll();
 
     });
-  
-    circle.on('moving',(e)=>{
-      var line = this.getObjectById('arrowLine'+arrowName) as fabric.Line;
-      var arrow = this.getObjectById('arrowStart'+arrowName) as fabric.Triangle;
+
+    circle.on('moving', (e) => {
+      var line = this.getObjectById('arrowLine' + arrowName) as fabric.Line;
+      var arrow = this.getObjectById('arrowStart' + arrowName) as fabric.Triangle;
       this.canvas.remove(line);
-      var newLine = new fabric.Line([circle.left,circle.top,arrow.left, arrow.top], {
+
+      var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
         stroke: '#000',
+        width: circle.width,
         selectable: false,
-        width:circle.width,
         strokeWidth: 2,
         padding: 5,
         originX: 'center',
         originY: 'center',
         name: 'arrowLine' + arrowName,
       });
-      arrow.angle=this.calcArrowAngle(line.get('x1'),line.get('y1') , line.get('x2'), line.get('y2'));
+      arrow.angle = this.calcArrowAngle(line.get('x1'), line.get('y1'), line.get('x2'), line.get('y2'));
       this.canvas.add(newLine);
-      this.canvas.renderAll(); 
+      this.canvas.renderAll();
     })
-    console.log(line);
     this.canvas.add(circle);
     this.canvas.add(arrow);
     this.canvas.add(line);
   }
- 
+
   calcArrowAngle(x1: any, y1: any, x2: any, y2: any) {
     var angle = 0,
       x, y;
@@ -230,7 +222,7 @@ export class CanvasComponent implements OnInit {
       angle = (x < 0) ? Math.atan(y / x) + Math.PI : (y < 0) ? Math.atan(y / x) + (2 * Math.PI) : Math.atan(y / x);
     }
 
-    return (angle * 180 / Math.PI)+90;
+    return (angle * 180 / Math.PI) + 90;
   }
   deleteFromEvent(nameToRemove: string): void {
     if (nameToRemove != null) {
@@ -278,6 +270,9 @@ export class CanvasComponent implements OnInit {
           break;
         case "image":
           this.insertImageToCanvas(target.src, e.name, newTarget.scaleX != null ? newTarget.scaleX : 0.5);
+          break;
+        case "arrow":
+          this.addArrowToCanvas();
           break;
         default:
           console.log('Target type not valid: ', target.type);
