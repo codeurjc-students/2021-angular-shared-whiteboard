@@ -49,7 +49,6 @@ export class SocketWebService extends Socket {
     this.ioSocket.emit('textChanged', payload);
   }
   drawFullArrow = (start:fabric.Circle, line:fabric.Line, end:fabric.Triangle)=>{
-    console.log(start,line,end);
     this.ioSocket.emit('arrowDrawed', start, line, end);
   }
 }
