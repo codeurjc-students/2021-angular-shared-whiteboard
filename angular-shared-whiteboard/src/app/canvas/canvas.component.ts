@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { fabric } from 'fabric';
 import { SocketWebService } from '../services/socket-web.service';
 import * as uuid from 'uuid';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-canvas',
@@ -54,6 +55,10 @@ export class CanvasComponent implements OnInit {
       this.emite = false;
       this.changeTextFromEvent(res)
     });
+    this.socketService.callDrawArrow.subscribe((res:any)=>{
+      this.emite = false;
+      this.addArrowToCanvas(res.start, res.line, res.end);
+    });
   }
 
 
@@ -71,9 +76,26 @@ export class CanvasComponent implements OnInit {
 
     this.canvas.on('object:added', (e) => {
       if (this.emite) {
-        if (e.target?.name != null) {
-          if (!e.target?.name.startsWith("arrow")) {
-            this.socketService.drawEvent(e, e.target?.name?.toString());
+        var shapeName = e.target?.name;
+        if (shapeName != null) {
+          if (shapeName.startsWith("arrowS")) {
+            
+              console.log('pintando ', e.target.name);
+              var idArrow = shapeName.substring(6, shapeName.length);
+              console.log(this.canvas.getObjects());
+              var line = this.getObjectById('arrowL' + idArrow) as fabric.Line;
+              var end = this.getObjectById('arrowE' + idArrow) as fabric.Triangle;
+
+              console.log(e.target);
+              console.log(line);
+              console.log(end);
+              this.socketService.drawFullArrow(e.target as fabric.Circle, line, end);
+
+          }else if(shapeName.startsWith("arrowE")|| shapeName.startsWith("arrowL")){
+
+          
+          }else{
+            this.socketService.drawEvent(e, shapeName?.toString());
           }
         }
       }
@@ -125,8 +147,8 @@ export class CanvasComponent implements OnInit {
     }
   }
 
-  addArrowToCanvas() {
-    var arrowName = this.generateObjectId();
+  addArrowToCanvas(start: fabric.Circle = null, line:fabric.Line=null, end: fabric.Triangle=null) {
+    var arrowId = this.generateObjectId();
     var arrow = new fabric.Triangle({
       left: 100,
       top: 50,
@@ -137,7 +159,7 @@ export class CanvasComponent implements OnInit {
       width: 20,
       height: 20,
       fill: '#000',
-      name: 'arrowEnd' + arrowName,
+      name: 'arrowE' + arrowId,
     });
     var line = new fabric.Line([50, 50, arrow.left, arrow.top], {
       stroke: '#000',
@@ -146,7 +168,7 @@ export class CanvasComponent implements OnInit {
       padding: 5,
       originX: 'center',
       originY: 'center',
-      name: 'arrowLine' + arrowName,
+      name: 'arrowL' + arrowId,
       type: 'ArrowLine',
     });
     var circle = new fabric.Circle({
@@ -162,12 +184,12 @@ export class CanvasComponent implements OnInit {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
-      name: 'arrowStart' + arrowName,
+      name: 'arrowS' + arrowId,
       type: 'ArrowStart',
       fill: '#000'
     });
     arrow.on('moving', (e) => {
-      var line = this.getObjectById('arrowLine' + arrowName) as fabric.Line;
+      var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
       this.canvas.remove(line);
       var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
         stroke: '#000',
@@ -176,7 +198,7 @@ export class CanvasComponent implements OnInit {
         padding: 5,
         originX: 'center',
         originY: 'center',
-        name: 'arrowLine' + arrowName,
+        name: 'arrowL' + arrowId,
         type: 'ArrowLine',
       });
       newLine.on('mousedblclick', () => {
@@ -191,7 +213,7 @@ export class CanvasComponent implements OnInit {
       this.canvas.remove(line);
     })
     circle.on('moving', (e) => {
-      var line = this.getObjectById('arrowLine' + arrowName) as fabric.Line;
+      var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
       this.canvas.remove(line);
 
       var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
@@ -202,7 +224,7 @@ export class CanvasComponent implements OnInit {
         padding: 5,
         originX: 'center',
         originY: 'center',
-        name: 'arrowLine' + arrowName,
+        name: 'arrowL' + arrowId,
         type: 'ArrowLine',
       }).on('mousedblclick', () => {
         this.canvas.remove(newLine);
@@ -212,9 +234,10 @@ export class CanvasComponent implements OnInit {
       this.canvas.renderAll();
     })
 
-    this.canvas.add(circle);
     this.canvas.add(arrow);
     this.canvas.add(line);
+    this.canvas.add(circle);
+
   }
 
   calcArrowAngle(x1: any, y1: any, x2: any, y2: any) {
@@ -235,9 +258,7 @@ export class CanvasComponent implements OnInit {
     return (angle * 180 / Math.PI) + 90;
   }
 
-  drawArrowEndFromEvent(arrowEnd: fabric.Triangle) {
-  }
-  drawArrowStartFromEvent(arrowStart: fabric.Circle) {
+  drawArrowFromEvent(start: fabric.Circle, line:fabric.Line, end: fabric.Triangle) {
 
   }
   deleteFromEvent(nameToRemove: string): void {
@@ -288,33 +309,12 @@ export class CanvasComponent implements OnInit {
         case "image":
           this.insertImageToCanvas(target.src, e.name, newTarget.scaleX != null ? newTarget.scaleX : 0.5);
           break;
-        case "arrowStart":
-          break;
-        case "arrowEnd":
-          break;
-        case "ArrowLine":
-          this.drawLineFromEvent(target);
-          this.canvas.add(new fabric.Line(target));
-          break;
         default:
           console.log('Target type not valid: ', target.type);
       }
     }
   }
-  drawLineFromEvent(line: fabric.Line) {
-    var newLine = new fabric.Line([line.x1, line.y1, line.x2, line.y2], {
-      stroke: '#000',
-      selectable: false,
-      strokeWidth: 2,
-      padding: 5,
-      originX: 'center',
-      originY: 'center',
-      name: line.name,
-      type: 'ArrowLine',
-    });
-    this.canvas.add(newLine);
 
-  }
   addObjectIdToTargetOptions(target: any, objectId: string): fabric.IObjectOptions {
     var ret = target as fabric.IObjectOptions;
     ret.name = objectId;

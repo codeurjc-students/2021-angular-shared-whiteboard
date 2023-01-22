@@ -12,6 +12,8 @@ export class SocketWebService extends Socket {
   @Output() callChangeColor: EventEmitter<any> = new EventEmitter();
   @Output() callModify: EventEmitter<any> = new EventEmitter();
   @Output() callTextChanged: EventEmitter<any> = new EventEmitter();
+  @Output() callDrawArrow: EventEmitter<any> = new EventEmitter();
+
   constructor(private cookieService: CookieService) {
     super({
       url: 'http://localhost:8080',
@@ -29,6 +31,7 @@ export class SocketWebService extends Socket {
     this.ioSocket.on('objectModified',(res:any, objects: any)=> this.callModify.emit({res, objects}))
     this.ioSocket.on('textChanged',(res:any)=> this.callTextChanged.emit(res))
     this.ioSocket.on('colorChanged', (obj: string, color: string) => this.callChangeColor.emit({ obj, color }))
+    this.ioSocket.on('arrowDrawed', (start:fabric.Circle, line:fabric.Line, end:fabric.Triangle)=> this.callDrawArrow.emit({start,line,end}))
   }
   drawEvent = (payload: any, name: string) => {
     this.ioSocket.emit('objectDrawed', payload, name);
@@ -44,6 +47,10 @@ export class SocketWebService extends Socket {
   }
   changeTextEvent = (payload: {}) => {
     this.ioSocket.emit('textChanged', payload);
+  }
+  drawFullArrow = (start:fabric.Circle, line:fabric.Line, end:fabric.Triangle)=>{
+    console.log(start,line,end);
+    this.ioSocket.emit('arrowDrawed', start, line, end);
   }
 }
 
