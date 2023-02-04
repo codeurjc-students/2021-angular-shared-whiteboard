@@ -41,7 +41,6 @@ io.on('connection', socket => {
         const arrowStart = start;
         const arrowLine = line;
         const arrowEnd = end;
-        console.log(arrowStart, arrowEnd,arrowLine);
         socket.to(nameRoom).emit('arrowDrawed', arrowStart, arrowLine, arrowEnd);
     });
 });

@@ -26,12 +26,18 @@ export class SocketWebService extends Socket {
     this.listen();
   }
   listen = () => {
-    this.ioSocket.on('objectDrawed', (res: any, name: string) => this.callDraw.emit({ res, name }))
-    this.ioSocket.on('objectRemoved', (res: any) => this.callRemove.emit(res))
-    this.ioSocket.on('objectModified',(res:any, objects: any)=> this.callModify.emit({res, objects}))
-    this.ioSocket.on('textChanged',(res:any)=> this.callTextChanged.emit(res))
-    this.ioSocket.on('colorChanged', (obj: string, color: string) => this.callChangeColor.emit({ obj, color }))
-    this.ioSocket.on('arrowDrawed', (start:fabric.Circle, line:fabric.Line, end:fabric.Triangle)=> this.callDrawArrow.emit({start,line,end}))
+    this.ioSocket.on('objectDrawed', (res: any, name: string) =>
+      this.callDraw.emit({ res, name }))
+    this.ioSocket.on('objectRemoved', (res: any) =>
+      this.callRemove.emit(res))
+    this.ioSocket.on('objectModified', (res: any, objects: any) =>
+      this.callModify.emit({ res, objects }))
+    this.ioSocket.on('textChanged', (res: any) =>
+      this.callTextChanged.emit(res))
+    this.ioSocket.on('colorChanged', (obj: string, color: string) =>
+      this.callChangeColor.emit({ obj, color }))
+    this.ioSocket.on('arrowDrawed', (startWithName: any, lineWithName: any, endWithName: any) =>
+      this.callDrawArrow.emit({ startWithName, lineWithName, endWithName }))
   }
   drawEvent = (payload: any, name: string) => {
     this.ioSocket.emit('objectDrawed', payload, name);
@@ -48,8 +54,8 @@ export class SocketWebService extends Socket {
   changeTextEvent = (payload: {}) => {
     this.ioSocket.emit('textChanged', payload);
   }
-  drawFullArrow = (start:fabric.Circle, line:fabric.Line, end:fabric.Triangle)=>{
-    this.ioSocket.emit('arrowDrawed', start, line, end);
+  drawFullArrow = (startWithName: any, lineWithName: any, endWithName: any) => {
+    this.ioSocket.emit('arrowDrawed', startWithName, lineWithName, endWithName);
   }
 }
 
