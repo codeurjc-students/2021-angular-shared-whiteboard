@@ -6,14 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "jest"
+    "test": "jest --env=jsdom"
   },
-  "jest": {
-    "testPathDirs": [
-      "src"
-    ],
-    "setupTestFrameworkScriptFile": "src/app/test.js"
-  },
+ 
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.0",
