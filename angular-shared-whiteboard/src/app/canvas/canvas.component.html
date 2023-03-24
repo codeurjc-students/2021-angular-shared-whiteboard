@@ -1,5 +1,5 @@
 <div class="navbar justify-content-center title">
-  2022 ANGULAR WHITEBOARD
+  2023 ANGULAR WHITEBOARD
 </div>
 
 <div class="container">
@@ -25,39 +25,39 @@
             <strong>Shapes</strong>
           </button>
           <div class="dropdown-menu dropdown-menu-right">
-            <button id="btnshape" (click)='onClick_drawRectButton()'>
+            <button id="btnRect" class="dropdown-item btnShape"(click)='onClick_drawRectButton()'>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7H7V17H17V7ZM4 4V20H20V4H4Z" fill="currentColor" />
               </svg> Rect</button>
-            <button id="btnshape" (click)='onClick_drawCircleButton()'>
+            <button id="btnCircle" class="dropdown-item btnShape" (click)='onClick_drawCircleButton()'>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z"
                   fill="currentColor" />
               </svg> Circle</button>
-            <button class="dropdown-item" id="btnshape" type="button" (click)='onClick_drawLineButton()'>
+            <button class="dropdown-item btnShape" id="btnLine" type="button" (click)='onClick_drawLineButton()'>
               <svg height="24" width="24">
                 <line x1="0" y1="0" x2="16" y2="16" style="stroke:rgb(114,92,193);stroke-width:4" />
               </svg> Line</button>
-            <button class="dropdown-item" id="btnshape" type="button" (click)='onClick_drawArrow1Button()'>
+            <button class="dropdown-item btnShape" id="btnArrowOne" type="button" (click)='onClick_drawArrow1Button()'>
               <svg height="24" width="24">
                 <polygon points="11,0 16,8 11,16" style="fill:rgb(114,92,193);stroke:rgb(114,92,193);stroke-width:1" />
                 <line x1="0" y1="8" x2="16" y2="8" style="stroke:rgb(114,92,193);stroke-width:4" />
               </svg> Arrow 1</button>
-              <button class="dropdown-item" id="btnshape" type="button" (click)='onClick_drawArrow2Button()'>
-                <svg height="24" width="24">
-                  <polygon points="11,0 16,8 11,16" style="fill:rgb(114,92,193);stroke:rgb(114,92,193);stroke-width:1" />
-                  <line x1="0" y1="8" x2="16" y2="8" style="stroke:rgb(114,92,193);stroke-width:4" />
-                </svg> Arrow 2</button>
-                <button class="dropdown-item" id="btnshape" type="button" (click)='onClick_drawArrow3Button()'>
-                  <svg height="24" width="24">
-                    <polygon points="11,0 16,8 11,16" style="fill:rgb(114,92,193);stroke:rgb(114,92,193);stroke-width:1" />
-                    <line x1="0" y1="8" x2="16" y2="8" style="stroke:rgb(114,92,193);stroke-width:4" />
-                  </svg> Arrow 3</button>
+            <button class="dropdown-item btnShape" id="btnArrowTwo" type="button" (click)='onClick_drawArrow2Button()'>
+              <svg height="24" width="24">
+                <polygon points="11,0 16,8 11,16" style="fill:rgb(114,92,193);stroke:rgb(114,92,193);stroke-width:1" />
+                <line x1="0" y1="8" x2="16" y2="8" style="stroke:rgb(114,92,193);stroke-width:4" />
+              </svg> Arrow 2</button>
+            <button class="dropdown-item btnShape" id="btnArrowThree" type="button" (click)='onClick_drawArrow3Button()'>
+              <svg height="24" width="24">
+                <polygon points="11,0 16,8 11,16" style="fill:rgb(114,92,193);stroke:rgb(114,92,193);stroke-width:1" />
+                <line x1="0" y1="8" x2="16" y2="8" style="stroke:rgb(114,92,193);stroke-width:4" />
+              </svg> Arrow 3</button>
           </div>
         </div>
       </div>
-     
+
       <div class="row">
         <div class="col" [id]="isDrawButtonActive ?'ck-button-selected'  :'ck-button' ">
           <label style="display:contents">
@@ -70,7 +70,7 @@
         <button id="btnText" (click)='showImageURL()'><strong>Add Image</strong></button>
         <div *ngIf="isImageShown" class="row container-fluid" id="divshow">
           <div class="row imageUrlInput">
-            <input type="url"  id="imageInput">
+            <input type="url" id="imageInput">
             <label class="form-label" for="typeURL">URL input</label>
             <button (click)='onClick_AddImage()'>Insert</button>
           </div>

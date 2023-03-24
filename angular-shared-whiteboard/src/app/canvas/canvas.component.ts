@@ -36,31 +36,39 @@ export class CanvasComponent implements OnInit {
   constructor(private socketService: SocketWebService) {
 
     this.socketService.callDraw.subscribe((res: any) => {
+      console.log('Recibiendo evento DIBUJAR objeto genérico: callDraw', res.name, ' - ', res.type);
       this.emite = false;
       this.drawFromEvent(res)
     });
     this.socketService.callRemove.subscribe((res: any) => {
+      console.log('Recibiendo evento BORRAR objeto genérico: callRemove');
       this.emite = false;
       this.deleteFromEvent(res)
     });
     this.socketService.callModify.subscribe((res: any) => {
       this.emite = false;
-      if (res.res.target.type== "ArrowEnd") {
-        this.modifyArrowEnd(res);
+      if (res.res.target.type == "ArrowEnd" || res.res.target.type === "ArrowStart") {
+        console.log('Recibiendo evento MODIFICAR FLECHA: callModify', res.res.target.name, ' - ', res.res.target.type);
+        this.modifyArrow(res);
+      } else {
+        console.log('Recibiendo evento MODIFICAR objeto genérico: callModify', res.res.target.name, ' - ', res.res.target.type);
+        this.modifyObjectFromEvent(res)
       }
-      this.modifyObjectFromEvent(res)
 
     });
     this.socketService.callChangeColor.subscribe((res: any) => {
+      console.log('Recibiendo evento CAMBIO COLOR objeto genérico: callChangeColor');
       this.emite = false;
       this.changeColorFromEvent(res);
     })
     this.socketService.callTextChanged.subscribe((res: any) => {
+      console.log('Recibiendo evento CAMBIAR TEXTO objeto genérico: callTextChanged');
       this.emite = false;
       this.changeTextFromEvent(res)
     });
     this.socketService.callDrawArrow.subscribe((res: any) => {
       this.emite = false;
+      console.log('Recibiendo evento DIBUJAR FLECHA: callDrawArrow');
       this.addArrowToCanvas(res.startWithName, res.lineWithName, res.endWithName);
     });
   }
@@ -90,6 +98,7 @@ export class CanvasComponent implements OnInit {
             var endName = end.name;
             var start = e.target as fabric.Circle;
             var startName = e.target.name;
+            console.log('Emitiendo evento DIBUJAR FLECHA: drawFullArrow: ', e);
             this.socketService.drawFullArrow({ start, startName }, { line, lineName }, { end, endName });
           } else if (shapeName.startsWith("arrowE") || shapeName.startsWith("arrowL")) {
           } else {
@@ -101,6 +110,7 @@ export class CanvasComponent implements OnInit {
     this.canvas.on('object:removed', (e) => {
       if (this.emite) {
         let nameShape = (e.target?.name)
+        console.log('Emitiendo evento BORRAR objeto genérico: removeEvent');
         this.socketService.removeEvent((nameShape));
       }
     });
@@ -112,10 +122,12 @@ export class CanvasComponent implements OnInit {
           shape: object
         });
       });
+      console.log('Emitiendo evento MODIFICAR objeto genérico: modifyEvent ', objects[0].name, ' - ', objects[0].type);
       this.socketService.modifyEvent(e, objects);
     });
     this.canvas.on('text:changed', (e) => {
       var name = e.target?.name;
+      console.log('Emitiendo evento MODIFICAR TEXTO: changeTextEvent');
       this.socketService.changeTextEvent(({ e, name }));
     });
   }
@@ -124,21 +136,23 @@ export class CanvasComponent implements OnInit {
     object.text = res.e.target.text;
     this.canvas.renderAll()
   }
-  modifyArrowEnd(event: any) {
+  modifyArrow(event: any) {
+
+    this.modifyObjectFromEvent(event)
+
     var from = event.objects[0];
-    var object = this.getObjectById(from.name);
-    if(object!=null){
+    var arrowEvent = this.getObjectById(from.name);
+    console.log('Objeto de modifyArrowEnd param ', arrowEvent);
+    
+    if (arrowEvent != null) {
       var arrowId = from.name.substring(6);
-      console.log(arrowId);
-      console.log(from.name);
       var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
       var circle = this.getObjectById('arrowS' + arrowId) as fabric.Circle;
       var arrow = this.getObjectById('arrowE' + arrowId) as fabric.Triangle;
-      console.log(line);console.log(circle);console.log(arrow);
       this.canvas.remove(line);
       var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
-        stroke:  '#000',
-        selectable: false,
+        stroke: '#000',
+        selectable: true,
         strokeWidth: 8,
         padding: 5,
         originX: 'center',
@@ -148,8 +162,12 @@ export class CanvasComponent implements OnInit {
       }).on('mousedblclick', () => {
         this.canvas.remove(newLine);
       });
-      arrow.angle = this.calcArrowAngle(line?.get('x1'), line?.get('y1'), line?.get('x2'), line?.get('y2'));
+    
       this.canvas.add(newLine);
+      if(arrowEvent.type === "ArrowStart"){
+        var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
+        arrow.angle = this.calcArrowAngle(line?.get('x1'), line?.get('y1'), line?.get('x2'), line?.get('y2'));
+      }
       this.canvas.renderAll();
     }
   }
@@ -160,6 +178,7 @@ export class CanvasComponent implements OnInit {
     } else {
       var from = event.objects[0];
       var object = this.getObjectById(from.name);
+      console.log('modifyObjectFromEvent es: ', object)
       if (object != null) {
         object.left = from.shape.left;
         object.top = from.shape.top;
@@ -197,8 +216,8 @@ export class CanvasComponent implements OnInit {
     });
     var line = new fabric.Line([50, 50, arrow.left, arrow.top], {
       stroke: line1 ? line1.stroke : '#000',
-      selectable: line1 ? line1.selectable : false,
-      strokeWidth: line1 ? line1.strokeWidth : 8,
+      selectable: line1 ? line1.selectable : true,
+      strokeWidth: line1 ? line1.strokeWidth : 5,
       padding: line1 ? line1.padding : 5,
       originX: line1 ? line1.originX : 'center',
       originY: line1 ? line1.originY : 'center',
@@ -210,7 +229,7 @@ export class CanvasComponent implements OnInit {
       top: line.get('y1'),
       radius: start ? start.radius : 3,
       stroke: start ? start.stroke : '#000',
-      strokeWidth: start ? start.strokeWidth : 3,
+      strokeWidth: start ? start.strokeWidth : 8,
       originX: start ? start.originX : 'center',
       originY: start ? start.originY : 'center',
       hasBorders: start ? start.hasBorders : false,
@@ -226,8 +245,8 @@ export class CanvasComponent implements OnInit {
       var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
       this.canvas.remove(line);
       var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
-        stroke:  '#000',
-        selectable: false,
+        stroke: '#000',
+        selectable: true,
         strokeWidth: 8,
         padding: 5,
         originX: 'center',
@@ -241,16 +260,14 @@ export class CanvasComponent implements OnInit {
       this.canvas.add(newLine);
       this.canvas.renderAll();
     });
-    line.on('mousedblclick', () => {
-      this.canvas.remove(line);
-    })
+  
     circle.on('moving', (e) => {
       var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
       this.canvas.remove(line);
 
       var newLine = new fabric.Line([circle.left, circle.top, arrow.left, arrow.top], {
-        stroke:  '#000',
-        selectable: false,
+        stroke: '#000',
+        selectable: true,
         strokeWidth: 8,
         padding: 5,
         originX: 'center',
@@ -318,6 +335,7 @@ export class CanvasComponent implements OnInit {
           this.canvas.add(new fabric.Rect(newTarget))
           break;
         case "circle":
+          console.log('hola ', e);
           this.canvas.add(new fabric.Circle(newTarget));
           break;
         case "textbox":
@@ -399,10 +417,7 @@ export class CanvasComponent implements OnInit {
   }
   onClick_drawArrow1Button(): void {
     this.emite = true;
-    // this.drawArrow(this.arrow1);
-
     this.addArrowToCanvas();
-
   }
   onClick_drawArrow2Button(): void {
     this.emite = true;

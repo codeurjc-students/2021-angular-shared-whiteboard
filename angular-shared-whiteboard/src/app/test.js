@@ -11,18 +11,26 @@ describe('testing', () => {
             await driver2.get('localhost:4200/sala1');
 
             let btnShapes = await driver2.findElement(By.id('btnshapes'));
-            driver2.wait(until.elementsLocated(By.id('btnshapes'), 10000));
-
             await btnShapes.click();
 
-            let btnShape = await driver2.findElement(By.id('btnshape'));
-            driver2.wait(until.elementsLocated(By.id('btnshape'), 10000));
+            let btnShapeRect = await driver2.findElement(By.id('btnRect'));
+            await btnShapeRect.click();
 
-            await btnShape.click();
-            let canvas = await driver1.findElement(By.id('canvas'));
-            driver1.wait(until.elementsLocated(By.id('canvas'), 10000));
-            // var objects = await canvas.getObjects();
-            console.log(canvas);
+            
+
+            // var p = await driver1.findElement(By.id('canvas')).then(function(p){
+            //     console.log(p);
+            //     p.then(function(e){
+            //         console.log(e);
+            //     })
+            // });
+            // var c = p.then(function(e){
+            //     console.log(e);
+            // });
+            // var bg = c.toDataURL("image/png");
+
+            // var canvas = new fabric.Canvas('c');
+            // console.log(canvas);
         });
     } catch {
         console.log()
