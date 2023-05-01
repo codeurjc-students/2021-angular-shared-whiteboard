@@ -83,7 +83,7 @@
           <div class="col colorPaletteContainer">
             <p>Click an object to change it color.</p>
             <span [style.background]="selectedColor" [cpToggle]="true" [cpDialogDisplay]="'inline'"
-              [(colorPicker)]="selectedColor" (colorPickerChange)="onChangeColor($event);"></span>
+              [(colorPicker)]="selectedColor" (colorPickerChange)="onClickChangeColor($event);"></span>
             <button id="btnColor" (click)='onClick_changeColor()'>Change Current Color</button>
           </div>
         </div>
