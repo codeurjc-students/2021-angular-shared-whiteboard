@@ -16,14 +16,11 @@ describe('testing', () => {
             let btnShapeRect = await driver2.findElement(By.id('btnRect'));
             await btnShapeRect.click();
 
-            
-
-            // var p = await driver1.findElement(By.id('canvas')).then(function(p){
-            //     console.log(p);
-            //     p.then(function(e){
-            //         console.log(e);
-            //     })
-            // });
+            let canvas = await driver1.findElement(By.xpath('canvas[id*="canvas"]'));
+            let html = await canvas.getText('innerHTML').then(e=>{
+                console.log(e);
+            });
+            console.log(html);
             // var c = p.then(function(e){
             //     console.log(e);
             // });
