@@ -47,6 +47,7 @@ export class CanvasComponent implements OnInit {
     });
     this.socketService.callModify.subscribe((res: any) => {
       this.emite = false;
+      console.log('Recibiendo Modificar flecha: ', res.res);
       if (res.res.target.type == "ArrowEnd" || res.res.target.type === "ArrowStart") {
         console.log('Recibiendo evento MODIFICAR FLECHA: callModify', res.res.target.name, ' - ', res.res.target.type);
         this.modifyArrow(res);
@@ -92,6 +93,7 @@ export class CanvasComponent implements OnInit {
         if (shapeName != null) {
           if (shapeName.startsWith("arrowS")) {
             var idArrow = shapeName.substring(6, shapeName.length);
+            
             var line = this.getObjectById('arrowL' + idArrow) as fabric.Line;
             var lineName = line.name;
             var end = this.getObjectById('arrowE' + idArrow) as fabric.Triangle;
@@ -108,39 +110,39 @@ export class CanvasComponent implements OnInit {
       }
     });
     this.canvas.on('object:removed', (e) => {
-      if (this.emite) {
+      if (this.emite && (e.target?.name.startsWith("arrowS") && e.target?.name.startsWith("arrowE") && e.target?.name.startsWith("arrowL"))) {
         let nameShape = (e.target?.name)
         console.log('Emitiendo evento BORRAR objeto genérico: removeEvent');
         this.socketService.removeEvent((nameShape));
       }
     });
     this.canvas.on('object:modified', (e) => {
-      var objects: any[] = [];
-      this.canvas.getActiveObjects().forEach((object: any) => {
-        objects.push({
-          name: object.name,
-          shape: object
+        var objects: any[] = [];
+        this.canvas.getActiveObjects().forEach((object: any) => {
+          objects.push({
+            name: object.name,
+            shape: object
+          });
         });
-      });
-      console.log('Emitiendo evento MODIFICAR objeto genérico: modifyEvent ', objects[0].name, ' - ', objects[0].type);
-      this.socketService.modifyEvent(e, objects);
+        console.log('Emitiendo evento MODIFICAR objeto genérico: modifyEvent ', objects[0].name, ' - ', objects[0].type);
+        this.socketService.modifyEvent(e, objects);
     });
     this.canvas.on('text:changed', (e) => {
-      var name = e.target?.name;
-      console.log('Emitiendo evento MODIFICAR TEXTO: changeTextEvent');
-      this.socketService.changeTextEvent(({ e, name }));
+        var name = e.target?.name;
+        console.log('Emitiendo evento MODIFICAR TEXTO: changeTextEvent');
+        this.socketService.changeTextEvent(({ e, name }));
     });
   }
- 
 
- 
+
+
   /************************ ACTIONS FROM EVENTS *************************/
   changeTextFromEvent(res: any) {
     var object = this.getObjectById(res.name) as fabric.Text
     object.text = res.e.target.text;
     this.canvas.renderAll()
   }
-  
+
   modifyObjectFromEvent(event: any) {
     var target = event.res.target;
     if (target.objects != null) {
@@ -148,7 +150,6 @@ export class CanvasComponent implements OnInit {
     } else {
       var from = event.objects[0];
       var object = this.getObjectById(from.name);
-      console.log('modifyObjectFromEvent es: ', object)
       if (object != null) {
         object.left = from.shape.left;
         object.top = from.shape.top;
@@ -190,7 +191,6 @@ export class CanvasComponent implements OnInit {
           this.canvas.add(new fabric.Rect(newTarget))
           break;
         case "circle":
-          console.log('hola ', e);
           this.canvas.add(new fabric.Circle(newTarget));
           break;
         case "textbox":
@@ -333,7 +333,7 @@ export class CanvasComponent implements OnInit {
       this.canvas.add(newLine);
       this.canvas.renderAll();
     });
-  
+
     circle.on('moving', (e) => {
       var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
       this.canvas.remove(line);
@@ -366,8 +366,7 @@ export class CanvasComponent implements OnInit {
 
     var from = event.objects[0];
     var arrowEvent = this.getObjectById(from.name);
-    console.log('Objeto de modifyArrowEnd param ', arrowEvent);
-    
+
     if (arrowEvent != null) {
       var arrowId = from.name.substring(6);
       var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
@@ -386,9 +385,9 @@ export class CanvasComponent implements OnInit {
       }).on('mousedblclick', () => {
         this.canvas.remove(newLine);
       });
-    
+
       this.canvas.add(newLine);
-      if(arrowEvent.type === "ArrowStart"){
+      if (arrowEvent.type === "ArrowStart") {
         var line = this.getObjectById('arrowL' + arrowId) as fabric.Line;
         arrow.angle = this.calcArrowAngle(line?.get('x1'), line?.get('y1'), line?.get('x2'), line?.get('y2'));
       }
@@ -412,7 +411,7 @@ export class CanvasComponent implements OnInit {
 
     return (angle * 180 / Math.PI) + 90;
   }
-  drawArrow(arrow: { x: number; y: number }[]) {
+  drawDefaultArrow(arrow: { x: number; y: number }[]) {
     var pline = new fabric.Polyline(arrow, {
       fill: 'white',
       stroke: this.selectedColor,
@@ -568,11 +567,11 @@ export class CanvasComponent implements OnInit {
   }
   onClick_drawArrow2Button(): void {
     this.emite = true;
-    this.drawArrow(this.arrow2);
+    this.drawDefaultArrow(this.arrow2);
   }
   onClick_drawArrow3Button(): void {
     this.emite = true;
-    this.drawArrow(this.arrow3);
+    this.drawDefaultArrow(this.arrow3);
   }
   onClick_AddImage(): void {
     this.emite = true;
