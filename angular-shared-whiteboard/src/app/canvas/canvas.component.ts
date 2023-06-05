@@ -11,7 +11,7 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 })
 export class CanvasComponent implements OnInit {
 
-  selectedColor: string = '#000000';
+  selectedColor: string = '##c61717'; 
   sak = "";
   public canvas = new fabric.Canvas('canvas');
   private emite: boolean = true;
