@@ -550,7 +550,7 @@ export class CanvasComponent implements OnInit {
   onClick_drawRectButton(): void {
     this.emite = true;
     this.canvas.add(new fabric.Rect({
-      width: 100, height: 100, left: 100, top: 100, fill: this.selectedColor, name: this.generateObjectId()
+      width: 100, height: 100, left: 0, top: 0, fill: this.selectedColor, name: this.generateObjectId()
     }))
 
   }

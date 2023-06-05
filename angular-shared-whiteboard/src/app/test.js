@@ -15,11 +15,11 @@ describe('testing', () => {
             await driver1.wait(until.elementLocated(By.id('canvas')), 60000);
             await driver2.wait(until.elementLocated(By.id('canvas')), 60000);
 
-            var canvas1Data = await driver1.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(100,100,2,2);').then(async e => {
+            var canvas1Data = await driver1.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(0,0,400,400);').then(async e => {
                 return e
             });
             console.log('canvas1Data ', canvas1Data.data);
-            var canvas2Data = await driver2.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(100,100,2,2);').then(async e => {
+            var canvas2Data = await driver2.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(0,0,400,400);').then(async e => {
                 return e
             });
             console.log('canvas2Data ', canvas2Data.data);
