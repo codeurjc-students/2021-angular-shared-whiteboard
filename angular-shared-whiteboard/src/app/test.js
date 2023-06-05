@@ -25,8 +25,13 @@ describe('testing', () => {
             console.log('canvas2Data ', canvas2Data.data);
 
             let areEqualsBefore = JSON.stringify(canvas1Data.data) === JSON.stringify(canvas2Data.data);
-            if (!areEqualsBefore)
+            if (!areEqualsBefore){
+                driver1.close();
+                driver2.close();
+
                 throw new Error("Canvas at these points are not equeals!");
+            }
+               
 
 
             let btnShapes = await driver2.findElement(By.id('btnshapes'));
