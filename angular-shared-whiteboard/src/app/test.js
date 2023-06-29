@@ -18,22 +18,15 @@ describe('testing', () => {
             var canvas1Data = await driver1.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(0,0,400,400);').then(async e => {
                 return e
             });
-            console.log('canvas1Data ', canvas1Data.data);
-            var canvas2Data = await driver2.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(0,0,400,400);').then(async e => {
+            var canvas2Data = await driver2.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(100,100,2,2);').then(async e => {
                 return e
             });
-            console.log('canvas2Data ', canvas2Data.data);
-
             let areEqualsBefore = JSON.stringify(canvas1Data.data) === JSON.stringify(canvas2Data.data);
             if (!areEqualsBefore){
                 driver1.close();
                 driver2.close();
-
                 throw new Error("Canvas at these points are not equeals!");
             }
-               
-
-
             let btnShapes = await driver2.findElement(By.id('btnshapes'));
             await btnShapes.click();
 
