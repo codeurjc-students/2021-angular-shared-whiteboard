@@ -89,7 +89,13 @@ export class CanvasComponent implements OnInit {
 
     this.canvas.on('object:added', (e) => {
       if (this.emite) {
+        console.log(e)
+        if(e.target?.type == "path"){
+          e.target.name = this.generateObjectId();
+          e.target.type = "path";
+        }
         var shapeName = e.target?.name;
+
         if (shapeName != null) {
           if (shapeName.startsWith("arrowS")) {
             var idArrow = shapeName.substring(6, shapeName.length);
@@ -110,7 +116,7 @@ export class CanvasComponent implements OnInit {
       }
     });
     this.canvas.on('object:removed', (e) => {
-      if (this.emite && (e.target?.name.startsWith("arrowS") && e.target?.name.startsWith("arrowE") && e.target?.name.startsWith("arrowL"))) {
+      if (this.emite) {
         let nameShape = (e.target?.name)
         console.log('Emitiendo evento BORRAR objeto genérico: removeEvent');
         this.socketService.removeEvent((nameShape));
@@ -221,6 +227,7 @@ export class CanvasComponent implements OnInit {
     return ret;
   }
   mapPathFromEvent(e: any): string {
+    console.log(e);
     const path = e.res.target.path as Array<Array<any>>;
     let pathValue = "";
     path.forEach((elements) => {
@@ -231,38 +238,6 @@ export class CanvasComponent implements OnInit {
     return pathValue;
   }
   /************************ END ACTIONS FROM EVENTS *************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /************************ ARROW *************************/
   addArrowToCanvas(startWithName?: any, lineWithName?: any, endWithName?: any) {
@@ -429,36 +404,6 @@ export class CanvasComponent implements OnInit {
   }
   /************************ ARROW *************************/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /************************ GENERIC EVENTS *************************/
   insertImageToCanvas(url: string, id: string, scale: number): void {
     fabric.Image.fromURL(url, img => {
@@ -476,50 +421,9 @@ export class CanvasComponent implements OnInit {
     return uuid.v4();
   }
   getObjectById(n: string): fabric.Object {
-    var ret: any;
-    this.canvas.getObjects().forEach((object: any) => {
-      if (object.name == n) {
-        ret = object;
-      }
-    });
-    return ret;
+   return this.canvas.getObjects().find((object: any) => object.name === n);
   }
   /************************ GENERIC EVENTS *************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /************************ ON CLICK EVENTS *************************/
   onClick_drawTextButton(): void {
