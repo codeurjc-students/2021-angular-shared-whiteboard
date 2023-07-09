@@ -18,7 +18,7 @@ describe('testing', () => {
             var canvas1Data = await driver1.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(0,0,400,400);').then(async e => {
                 return e
             });
-            var canvas2Data = await driver2.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(100,100,2,2);').then(async e => {
+            var canvas2Data = await driver2.executeScript('return document.getElementById("canvas").getContext("2d").getImageData(0,0,4000,400);').then(async e => {
                 return e
             });
             let areEqualsBefore = JSON.stringify(canvas1Data.data) === JSON.stringify(canvas2Data.data);
